@@ -5,7 +5,8 @@ import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
 import 'package:siapa/login.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'dart:convert' as convert;
+import 'dart:async';
 
 class JudulMahasiswa extends StatefulWidget {
   const JudulMahasiswa({Key? key}) : super(key: key);
@@ -15,13 +16,40 @@ class JudulMahasiswa extends StatefulWidget {
 }
 
 class _JudulMahasiswaState extends State<JudulMahasiswa> {
-  // StreamController<List> _streamController = StreamController<List>();
-
   Future viewJudulMahasiswa() async {
-    var url =
-        'https://project.mis.pens.ac.id/mis112/siapa/dosen/api/content/judulmahasiswa.php?function=viewJudulMahasiswa';
-    var response = await http.get(Uri.parse(url));
-    return json.decode(response.body);
+    var url = Uri.https(
+        'project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/judulmahasiswa.php',
+        {'function': 'viewJudulMahasiswa'});
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var jsonData = convert.jsonDecode(response.body);
+      // print(jsonData['data']['JUDUL']);
+
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
+  }
+
+  Future viewJudulMahasiswaDosen1() async {
+    var url = Uri.https(
+        'project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/judulmahasiswa.php',
+        {'function': 'viewJudulMahasiswaDosen1'});
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      dynamic jsonData = convert.jsonDecode(response.body);
+      // print(jsonData['data']);
+
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
   }
 
   @override
@@ -32,7 +60,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       title: Text(
-        "Judul Mahasiswa",
+        "Judul Mahasiswa Diterima",
         style: TextStyle(
             color: Color(0xFF578BB8),
             fontSize: 20,
@@ -211,12 +239,45 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                           ),
                                           Container(
                                             width: 150,
-                                            child: Text(
-                                              "Muhammad Fagi",
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  letterSpacing: 1),
+                                            child: FutureBuilder<dynamic>(
+                                              future: viewJudulMahasiswa(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.error != null) {
+                                                  return Text(
+                                                    "${snapshot.error}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
+                                                  );
+                                                }
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                } else {
+                                                  return Container(
+                                                      child: ListView.builder(
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          shrinkWrap: true,
+                                                          itemCount: 1,
+                                                          itemBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  index) {
+                                                            return Text(
+                                                              "${snapshot.data[index]["MAHASISWA"]}",
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  letterSpacing:
+                                                                      1),
+                                                            );
+                                                          }));
+                                                }
+                                              },
                                             ),
                                           ),
                                         ],
@@ -261,28 +322,37 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                       child: FutureBuilder<dynamic>(
                                         future: viewJudulMahasiswa(),
                                         builder: (context, snapshot) {
-                                          if (snapshot.hasError)
-                                            print(snapshot.error);
-                                          return snapshot.hasData
-                                              ? ListView.builder(
-                                                  itemCount: snapshot.data,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    List list = snapshot.data;
-                                                    return Text(
-                                                      list[index]['JUDUL'],
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          letterSpacing: 1),
-                                                    );
-                                                  },
-                                                )
-                                              : Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
+                                          if (snapshot.error != null) {
+                                            return Text(
+                                              "${snapshot.error}",
+                                              style: TextStyle(fontSize: 20),
+                                            );
+                                          }
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          } else {
+                                            return Container(
+                                                child: ListView.builder(
+                                                    scrollDirection:
+                                                        Axis.vertical,
+                                                    shrinkWrap: true,
+                                                    itemCount: 1,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            index) {
+                                                      return Text(
+                                                        "${snapshot.data[index]["JUDUL"]}",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            letterSpacing: 1),
+                                                      );
+                                                    }));
+                                          }
                                         },
                                       ),
                                     ),
@@ -303,26 +373,27 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                             ),
                             Container(
                               alignment: Alignment.topLeft,
-                              child: Text(
-                                "Pembimbing 1 : Rengga Asmara, S.Kom., M.T.",
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.5)),
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                "Pembimbing 2 : Nana Ramadijanti, S.Kom, M.Kom",
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.5)),
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                "Pembimbing 3 : ",
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.5)),
+                              child: FutureBuilder<dynamic>(
+                                future: viewJudulMahasiswaDosen1(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.error != null) {
+                                    return Text(
+                                      "${snapshot.error}",
+                                      style: TextStyle(fontSize: 20),
+                                    );
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else {
+                                    return Text(
+                                      "Pembimbing 1 : ${snapshot.data["NAMA"]}",
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.5)),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                             Container(
@@ -394,21 +465,26 @@ Widget _buildPopUpJudulMahasiswa(BuildContext context) {
     ),
     content: new Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
       children: <Widget>[
         Container(
           margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
           alignment: Alignment.centerLeft,
-          child: Text(
-            "Tahun Ajaran",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+          child: Row(
+            children: [
+              Text(
+                "Tahun Ajaran",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+              ),
+              Text("*", style: TextStyle(color: Colors.red, fontSize: 20),)
+            ],
           ),
         ),
         Container(
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -418,16 +494,21 @@ Widget _buildPopUpJudulMahasiswa(BuildContext context) {
         Container(
           margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
           alignment: Alignment.centerLeft,
-          child: Text(
-            "Semester",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+          child: Row(
+            children: [
+              Text(
+                "Semester",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+              ),
+              Text("*", style: TextStyle(color: Colors.red, fontSize: 20),)
+            ],
           ),
         ),
         Container(
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -437,16 +518,21 @@ Widget _buildPopUpJudulMahasiswa(BuildContext context) {
         Container(
           margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
           alignment: Alignment.centerLeft,
-          child: Text(
-            "Program",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+          child: Row(
+            children: [
+              Text(
+                "Program",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+              ),
+              Text("*", style: TextStyle(color: Colors.red, fontSize: 20),)
+            ],
           ),
         ),
         Container(
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -456,16 +542,21 @@ Widget _buildPopUpJudulMahasiswa(BuildContext context) {
         Container(
           margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
           alignment: Alignment.centerLeft,
-          child: Text(
-            "Jurusan",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+          child: Row(
+            children: [
+              Text(
+                "Jurusan",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+              ),
+              Text("*", style: TextStyle(color: Colors.red, fontSize: 20),)
+            ],
           ),
         ),
         Container(
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -475,16 +566,21 @@ Widget _buildPopUpJudulMahasiswa(BuildContext context) {
         Container(
           margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
           alignment: Alignment.centerLeft,
-          child: Text(
-            "Status Persetujuan",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+          child: Row(
+            children: [
+              Text(
+                "Status Persetujuan",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+              ),
+              Text("*", style: TextStyle(color: Colors.red, fontSize: 20),)
+            ],
           ),
         ),
         Container(
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),

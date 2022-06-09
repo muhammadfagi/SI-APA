@@ -636,7 +636,7 @@ Widget _buildPopupDosenPembimbing(BuildContext context) {
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -655,7 +655,7 @@ Widget _buildPopupDosenPembimbing(BuildContext context) {
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -674,7 +674,7 @@ Widget _buildPopupDosenPembimbing(BuildContext context) {
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),

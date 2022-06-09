@@ -1,11 +1,11 @@
-import 'dart:convert';
-import 'dart:developer';
-
+import 'dart:convert' as convert;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:siapa/dosen/penawaranjudul.dart';
 import 'package:siapa/mahasiswa/judul.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_session/flutter_session.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -17,37 +17,82 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController u = new TextEditingController();
   TextEditingController p = new TextEditingController();
-  String url = "https://project.mis.pens.ac.id/mis112/siapa/login.php";
 
-  String msg = '';
-  Future<dynamic> _login() async {
-    final response = await http.post(
-        Uri.parse(url),
-        body: {
-          "netid": u.text,
-          "password": p.text,
-        });
-    print(response.body);
-    var datauser = json.decode(response.body.toString());
-    if (datauser.length == 0) {
-      setState(() {
-        msg = "Login Gagal";
-      });
-    }else{
-      if(datauser[0]['status']=='active'){
-        Navigator.pushReplacementNamed(context, '/judul');
-      }else{
-        print("Bukan Mahasiswa Aktif");
+  Future _loginMahasiswa() async {
+    print(u.text);
+    try {
+      http.Response hasil = await http
+          .post(Uri.https('project.mis.pens.ac.id', '/mis112/siapa/login.php'),
+              body: convert.jsonEncode({
+                'netid': u.text,
+                'password': p.text,
+              }),
+              headers: {
+            "Accept": "application/json",
+          });
+      var dataUser = convert.jsonDecode(hasil.body);
+      if (hasil.statusCode == 200) {
+        if (dataUser['Status'] == 'active') {
+          var dataUser = convert.jsonDecode(hasil.body);
+          print("Login Berhasil");
+          print(dataUser);
+          await FlutterSession().set('nrp', dataUser['NRP']);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => Judul()));
+        } else {
+          print("Bukan Mahasiswa Aktif");
+        }
+        return true;
+      } else {
+        print("error status " + hasil.statusCode.toString());
+        return null;
       }
+    } catch (e) {
+      print("error catchnya $e");
+      return null;
     }
   }
+
+  // Future _loginDosen() async {
+  //   print(u.text);
+  //   print(p.text);
+    
+  //   try {
+  //     http.Response hasil = await http.post(
+  //         Uri.https('project.mis.pens.ac.id','/mis112/siapa/logindosen.php'),
+  //         body: convert.jsonEncode({
+  //           'netid': u.text,
+  //           'password': p.text,
+  //         }),
+  //         headers: {
+  //           "Accept": "application/json",
+  //         });
+  //     print(hasil.body);
+  //     var dataUser = convert.jsonDecode(hasil.body);
+  //     if (hasil.statusCode == 200) {
+  //       if (dataUser['status'] == 'Koordinator') {
+  //         print("Login Berhasil");
+  //         Navigator.push(context, MaterialPageRoute(builder: (_) => JudulMahasiswa()));
+  //       }else if (dataUser['status'] == 'Dosen') {
+  //         print("Login Berhasil");
+  //         Navigator.push(context, MaterialPageRoute(builder: (_) => PenawaranJudul()));
+  //       }
+  //       else {
+  //         print("Login Gagal");
+  //       }
+  //       return true;
+  //     } else {
+  //       print("error status " + hasil.statusCode.toString());
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print("error catchnya $e");
+  //     return null;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: <String, WidgetBuilder>{
-        '/judul': (BuildContext context) => new Judul(),
-      },
       home: Scaffold(
         body: ListView(
           children: <Widget>[
@@ -125,15 +170,10 @@ class _LoginState extends State<Login> {
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        _login();
-                        // log(u.text);
-                        // log(p.text);
+                        _loginMahasiswa();
+                        // _loginDosen();
                       },
                     ),
-                  ),
-                  Text(
-                    msg,
-                    style: TextStyle(fontSize: 20, color: Colors.red),
                   ),
                   Container(
                     width: 508,

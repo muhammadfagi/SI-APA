@@ -252,7 +252,7 @@ Widget _buildPopUpRekapStatusDiambil(BuildContext context) {
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -271,7 +271,7 @@ Widget _buildPopUpRekapStatusDiambil(BuildContext context) {
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -290,7 +290,7 @@ Widget _buildPopUpRekapStatusDiambil(BuildContext context) {
           height: 40.0,
           child: DropdownSearch<String>(
               mode: Mode.MENU,
-              showSelectedItem: true,
+              // showSelectedItem: true,
               items: data,
               hint: "country in menu mode",
               popupItemDisabled: (String s) => s.startsWith('I'),
@@ -315,7 +315,7 @@ Widget _buildPopUpRekapStatusDiambil(BuildContext context) {
                   width: 100.0,
                   child: DropdownSearch<String>(
                       mode: Mode.MENU,
-                      showSelectedItem: true,
+                      // showSelectedItem: true,
                       items: data,
                       hint: "country in menu mode",
                       popupItemDisabled: (String s) => s.startsWith('I'),
@@ -339,7 +339,7 @@ Widget _buildPopUpRekapStatusDiambil(BuildContext context) {
                   width: 100.0,
                   child: DropdownSearch<String>(
                       mode: Mode.MENU,
-                      showSelectedItem: true,
+                      // showSelectedItem: true,
                       items: data,
                       hint: "country in menu mode",
                       popupItemDisabled: (String s) => s.startsWith('I'),
