@@ -8,6 +8,8 @@ import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter_session/flutter_session.dart';
 import '../models/namadosen.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:file_picker/file_picker.dart';
 
 class TambahJudul extends StatefulWidget {
   const TambahJudul({Key? key}) : super(key: key);
@@ -30,7 +32,7 @@ class _TambahJudulState extends State<TambahJudul> {
   TextEditingController dosbing2 = new TextEditingController();
   TextEditingController dosbing3 = new TextEditingController();
   TextEditingController prioritas = new TextEditingController();
-  // TextEditingController dokumen = new TextEditingController();
+  TextEditingController dokumen = new TextEditingController();
 
   Future getNomor() async {
     try {
@@ -81,7 +83,7 @@ class _TambahJudulState extends State<TambahJudul> {
 
   Future tambahJudul() async {
     // try {
-    
+
     int nomor = await FlutterSession().get('NOMOR');
     String nomorQuery = nomor.toString();
     // String namapegawai1 = await FlutterSession().get('NAMA');
@@ -244,22 +246,31 @@ class _TambahJudulState extends State<TambahJudul> {
                               // searchBoxController: dosbing3,
                               hint: "Pilih Dosen",
                               onChanged: (value) => nomordosen1 = value?.nomor,
-                              dropdownBuilder: (context, selectedItem) => Text(selectedItem?.nama ?? "Belum Memilih Dosen"),
-                              popupItemBuilder: (context, item, isSelected) => ListTile(
+                              dropdownBuilder: (context, selectedItem) => Text(
+                                  selectedItem?.nama ?? "Belum Memilih Dosen"),
+                              popupItemBuilder: (context, item, isSelected) =>
+                                  ListTile(
                                 title: Text(item.nama),
                               ),
                               onFind: (text) async {
-                                var url = Uri.https('project.mis.pens.ac.id','/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
+                                var url = Uri.https('project.mis.pens.ac.id',
+                                    '/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
                                 var response = await http.get(url);
-                                if(response.statusCode == 200){
-                                  List namadosen = (convert.jsonDecode(response.body) as Map<String, dynamic>)['data'];
+                                if (response.statusCode == 200) {
+                                  List namadosen =
+                                      (convert.jsonDecode(response.body)
+                                          as Map<String, dynamic>)['data'];
                                   List<NamaDosen> dosen = [];
                                   namadosen.forEach((element) {
-                                    dosen.add(NamaDosen(nomor: element["NOMOR"],nama: element["NAMA"],gelarDpn: element["GELAR_DPN"],gelarBlk: element["GELAR_BLK"]));
+                                    dosen.add(NamaDosen(
+                                        nomor: element["NOMOR"],
+                                        nama: element["NAMA"],
+                                        gelarDpn: element["GELAR_DPN"],
+                                        gelarBlk: element["GELAR_BLK"]));
                                   });
                                   return dosen;
-                                } else{
-                                  return[];
+                                } else {
+                                  return [];
                                 }
                               },
                             ),
@@ -281,22 +292,31 @@ class _TambahJudulState extends State<TambahJudul> {
                               // searchBoxController: dosbing3,
                               hint: "Pilih Dosen",
                               onChanged: (value) => nomordosen2 = value?.nomor,
-                              dropdownBuilder: (context, selectedItem) => Text(selectedItem?.nama ?? "Belum Memilih Dosen"),
-                              popupItemBuilder: (context, item, isSelected) => ListTile(
+                              dropdownBuilder: (context, selectedItem) => Text(
+                                  selectedItem?.nama ?? "Belum Memilih Dosen"),
+                              popupItemBuilder: (context, item, isSelected) =>
+                                  ListTile(
                                 title: Text(item.nama),
                               ),
                               onFind: (text) async {
-                                var url = Uri.https('project.mis.pens.ac.id','/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
+                                var url = Uri.https('project.mis.pens.ac.id',
+                                    '/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
                                 var response = await http.get(url);
-                                if(response.statusCode == 200){
-                                  List namadosen = (convert.jsonDecode(response.body) as Map<String, dynamic>)['data'];
+                                if (response.statusCode == 200) {
+                                  List namadosen =
+                                      (convert.jsonDecode(response.body)
+                                          as Map<String, dynamic>)['data'];
                                   List<NamaDosen> dosen = [];
                                   namadosen.forEach((element) {
-                                    dosen.add(NamaDosen(nomor: element["NOMOR"],nama: element["NAMA"],gelarDpn: element["GELAR_DPN"],gelarBlk: element["GELAR_BLK"]));
+                                    dosen.add(NamaDosen(
+                                        nomor: element["NOMOR"],
+                                        nama: element["NAMA"],
+                                        gelarDpn: element["GELAR_DPN"],
+                                        gelarBlk: element["GELAR_BLK"]));
                                   });
                                   return dosen;
-                                } else{
-                                  return[];
+                                } else {
+                                  return [];
                                 }
                               },
                             ),
@@ -318,22 +338,31 @@ class _TambahJudulState extends State<TambahJudul> {
                               // searchBoxController: dosbing3,
                               hint: "Pilih Dosen",
                               onChanged: (value) => nomordosen3 = value?.nomor,
-                              dropdownBuilder: (context, selectedItem) => Text(selectedItem?.nama ?? "Belum Memilih Dosen"),
-                              popupItemBuilder: (context, item, isSelected) => ListTile(
+                              dropdownBuilder: (context, selectedItem) => Text(
+                                  selectedItem?.nama ?? "Belum Memilih Dosen"),
+                              popupItemBuilder: (context, item, isSelected) =>
+                                  ListTile(
                                 title: Text(item.nama),
                               ),
                               onFind: (text) async {
-                                var url = Uri.https('project.mis.pens.ac.id','/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
+                                var url = Uri.https('project.mis.pens.ac.id',
+                                    '/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
                                 var response = await http.get(url);
-                                if(response.statusCode == 200){
-                                  List namadosen = (convert.jsonDecode(response.body) as Map<String, dynamic>)['data'];
+                                if (response.statusCode == 200) {
+                                  List namadosen =
+                                      (convert.jsonDecode(response.body)
+                                          as Map<String, dynamic>)['data'];
                                   List<NamaDosen> dosen = [];
                                   namadosen.forEach((element) {
-                                    dosen.add(NamaDosen(nomor: element["NOMOR"],nama: element["NAMA"],gelarDpn: element["GELAR_DPN"],gelarBlk: element["GELAR_BLK"]));
+                                    dosen.add(NamaDosen(
+                                        nomor: element["NOMOR"],
+                                        nama: element["NAMA"],
+                                        gelarDpn: element["GELAR_DPN"],
+                                        gelarBlk: element["GELAR_BLK"]));
                                   });
                                   return dosen;
-                                } else{
-                                  return[];
+                                } else {
+                                  return [];
                                 }
                               },
                             ),
@@ -352,7 +381,10 @@ class _TambahJudulState extends State<TambahJudul> {
                             width: 340,
                             height: 40,
                             child: TextField(
-                              // controller: dokumen,
+                              readOnly: true,
+                              controller: dokumen,
+                              onTap: () async {
+                              },
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: false,
@@ -444,7 +476,10 @@ class _TambahJudulState extends State<TambahJudul> {
                                     ),
                                     onPressed: () {
                                       tambahJudul();
-                                      Navigator.push(context, MaterialPageRoute(builder: (_) => TambahJudul()));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => TambahJudul()));
                                     },
                                   ),
                                 ),

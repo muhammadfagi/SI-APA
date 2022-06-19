@@ -52,43 +52,43 @@ class _LoginState extends State<Login> {
     }
   }
 
-  // Future _loginDosen() async {
-  //   print(u.text);
-  //   print(p.text);
+  Future _loginDosen() async {
+    print(u.text);
+    print(p.text);
     
-  //   try {
-  //     http.Response hasil = await http.post(
-  //         Uri.https('project.mis.pens.ac.id','/mis112/siapa/logindosen.php'),
-  //         body: convert.jsonEncode({
-  //           'netid': u.text,
-  //           'password': p.text,
-  //         }),
-  //         headers: {
-  //           "Accept": "application/json",
-  //         });
-  //     print(hasil.body);
-  //     var dataUser = convert.jsonDecode(hasil.body);
-  //     if (hasil.statusCode == 200) {
-  //       if (dataUser['status'] == 'Koordinator') {
-  //         print("Login Berhasil");
-  //         Navigator.push(context, MaterialPageRoute(builder: (_) => JudulMahasiswa()));
-  //       }else if (dataUser['status'] == 'Dosen') {
-  //         print("Login Berhasil");
-  //         Navigator.push(context, MaterialPageRoute(builder: (_) => PenawaranJudul()));
-  //       }
-  //       else {
-  //         print("Login Gagal");
-  //       }
-  //       return true;
-  //     } else {
-  //       print("error status " + hasil.statusCode.toString());
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print("error catchnya $e");
-  //     return null;
-  //   }
-  // }
+    try {
+      http.Response hasil = await http.post(
+          Uri.https('project.mis.pens.ac.id','/mis112/siapa/logindosen.php'),
+          body: convert.jsonEncode({
+            'netid': u.text,
+            'password': p.text,
+          }),
+          headers: {
+            "Accept": "application/json",
+          });
+      print(hasil.body);
+      var dataUser = convert.jsonDecode(hasil.body);
+      if (hasil.statusCode == 200) {
+        if (dataUser['status'] == 'Koordinator') {
+          print("Login Berhasil");
+          Navigator.push(context, MaterialPageRoute(builder: (_) => JudulMahasiswa()));
+        }else if (dataUser['status'] == 'Dosen') {
+          print("Login Berhasil");
+          Navigator.push(context, MaterialPageRoute(builder: (_) => PenawaranJudul()));
+        }
+        else {
+          print("Login Gagal");
+        }
+        return true;
+      } else {
+        print("error status " + hasil.statusCode.toString());
+        return null;
+      }
+    } catch (e) {
+      print("error catchnya $e");
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,64 +166,12 @@ class _LoginState extends State<Login> {
                         )),
                       ),
                       child: Text(
-                        "Mahasiswa",
+                        "Login",
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
                         _loginMahasiswa();
-                        // _loginDosen();
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: 508,
-                    height: 45,
-                    margin: EdgeInsets.only(top: 11.0),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xff578BB8)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                      ),
-                      child: Text(
-                        "Koordinator",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onPressed: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return JudulMahasiswa();
-                        }));
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: 508,
-                    height: 45,
-                    margin: EdgeInsets.only(top: 11.0),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xff578BB8)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                      ),
-                      child: Text(
-                        "Dosen",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      onPressed: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return PenawaranJudul();
-                        }));
+                        _loginDosen();
                       },
                     ),
                   ),

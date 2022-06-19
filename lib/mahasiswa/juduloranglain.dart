@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:siapa/mahasiswa/judul.dart';
 import 'package:siapa/login.dart';
 import 'package:siapa/mahasiswa/penawarantopik.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import 'dart:async';
+import 'package:flutter_session/flutter_session.dart';
 
 class JudulOrangLain extends StatefulWidget {
   const JudulOrangLain({Key? key}) : super(key: key);
@@ -9,6 +13,106 @@ class JudulOrangLain extends StatefulWidget {
   @override
   State<JudulOrangLain> createState() => _JudulOrangLainState();
 }
+
+Future viewJudulOrangLain() async {
+  // try {
+  int nrp = await FlutterSession().get('nrp');
+  String nrpQuery = nrp.toString();
+  var url = Uri.https(
+      'project.mis.pens.ac.id',
+      '/mis112/siapa/mahasiswa/api/content/juduloranglain.php/',
+      {'nrp': nrpQuery});
+
+  var response = await http.get(url);
+  var jsonData = convert.jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    return jsonData['data'];
+  } else {
+    print('No Response');
+  }
+  // } catch (e) {
+  //   print("error catchnya $e");
+  //   return null;
+  // }
+}
+
+// Future viewDospem1() async {
+//   try {
+//     // String nmr = widget.nomor;
+//     // String nmrQuery = nmr.toString();
+//     // print(nmr);
+
+//     var url = Uri.https(
+//         'project.mis.pens.ac.id',
+//         '/mis112/siapa/mahasiswa/api/content/viewdosenpembimbingoranglain.php/',
+//         {'function': 'viewDosen1'});
+//     // var response =
+//     //     await http.get(url, headers: {"Accept": "application/json"});
+//     var response = await http.get(url);
+//     if (response.statusCode == 200) {
+//       var jsonData = convert.jsonDecode(response.body);
+
+//       return jsonData['data'];
+//     } else {
+//       print('No Response');
+//     }
+//   } catch (e) {
+//     print("error catchnya $e");
+//     return null;
+//   }
+// }
+
+// Future viewDospem2() async {
+//   try {
+//     String nmr = widget.nomor;
+//     // String nmrQuery = nmr.toString();
+//     print(nmr);
+
+//     var url = Uri.https(
+//         'project.mis.pens.ac.id',
+//         '/mis112/siapa/mahasiswa/api/content/viewdosenpembimbing.php/',
+//         {'function': 'viewDosen2', 'NOMOR': nmr});
+//     // var response =
+//     //     await http.get(url, headers: {"Accept": "application/json"});
+//     var response = await http.get(url);
+//     if (response.statusCode == 200) {
+//       var jsonData = convert.jsonDecode(response.body);
+
+//       return jsonData['data'];
+//     } else {
+//       print('No Response');
+//     }
+//   } catch (e) {
+//     print("error catchnya $e");
+//     return null;
+//   }
+// }
+
+// Future viewDospem3() async {
+//   try {
+//     String nmr = widget.nomor;
+//     // String nmrQuery = nmr.toString();
+//     print(nmr);
+
+//     var url = Uri.https(
+//         'project.mis.pens.ac.id',
+//         '/mis112/siapa/mahasiswa/api/content/viewdosenpembimbing.php/',
+//         {'function': 'viewDosen3', 'NOMOR': nmr});
+//     // var response =
+//     //     await http.get(url, headers: {"Accept": "application/json"});
+//     var response = await http.get(url);
+//     if (response.statusCode == 200) {
+//       var jsonData = convert.jsonDecode(response.body);
+
+//       return jsonData['data'];
+//     } else {
+//       print('No Response');
+//     }
+//   } catch (e) {
+//     print("error catchnya $e");
+//     return null;
+//   }
+// }
 
 class _JudulOrangLainState extends State<JudulOrangLain> {
   @override
@@ -181,69 +285,102 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                     ],
                   ),
                 ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(26, 14, 26, 0),
-                  child: SizedBox(
-                    width: 340,
-                    height: 134,
-                    child: Container(
-                      margin: EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                width: 300,
-                                child: Text(
-                                  "Aplikasi Administrasi Judul Proyek Berbasis Mobile PENS",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 1),
+                FutureBuilder<dynamic>(
+                  future: viewJudulOrangLain(),
+                  builder: (context, snapshot) {
+                    if (snapshot.error != null) {
+                      return Text(
+                        "${snapshot.error}",
+                        style: TextStyle(fontSize: 20),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return Container(
+                        child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(), // new
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (BuildContext context, index) {
+                            return Container(
+                              child: Card(
+                                margin: EdgeInsets.fromLTRB(26, 14, 26, 0),
+                                child: SizedBox(
+                                  width: 340,
+                                  height: 134,
+                                  child: Container(
+                                    margin: EdgeInsets.all(20),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Container(
+                                              width: 300,
+                                              child: Text(
+                                                "${snapshot.data[index]["JUDUL"]}",
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 1),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          width: 233,
+                                          margin:
+                                              EdgeInsets.fromLTRB(0, 11, 0, 11),
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Color(0xff578BB8)
+                                                  .withOpacity(0.75),
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                            margin:
+                                                EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              "Pembimbing 1 : tes",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )),
+                                        Container(
+                                          alignment: Alignment.topLeft,
+                                          child: Text(
+                                            "Pembimbing 2 : Nana Ramadijanti, S.Kom, M.Kom",
+                                            style: TextStyle(
+                                                color: Colors.black
+                                                    .withOpacity(0.5)),
+                                          ),
+                                        ),
+                                        Container(
+                                          alignment: Alignment.topLeft,
+                                          child: Text(
+                                            "Pembimbing 3 : ",
+                                            style: TextStyle(
+                                                color: Colors.black
+                                                    .withOpacity(0.5)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                          Container(
-                            width: 233,
-                            margin: EdgeInsets.fromLTRB(0, 11, 0, 11),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Color(0xff578BB8).withOpacity(0.75),
-                                width: 1.0,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Pembimbing 1 : Rengga Asmara, S.Kom., M.T.",
-                              style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5)),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Pembimbing 2 : Nana Ramadijanti, S.Kom, M.Kom",
-                              style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5)),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Pembimbing 3 : ",
-                              style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),

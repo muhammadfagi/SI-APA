@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:siapa/mahasiswa/detailjudul.dart';
 import 'package:siapa/mahasiswa/judul.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
+import '../models/namadosen.dart';
 
 class DetailJudul extends StatefulWidget {
   final String nomor;
@@ -26,6 +28,84 @@ class _DetailJudulState extends State<DetailJudul> {
           'project.mis.pens.ac.id',
           '/mis112/siapa/mahasiswa/api/content/detailjudul.php/',
           {'function': 'viewDetailJudul', 'NOMOR': nmr});
+      // var response =
+      //     await http.get(url, headers: {"Accept": "application/json"});
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var jsonData = convert.jsonDecode(response.body);
+
+        return jsonData['data'];
+      } else {
+        print('No Response');
+      }
+    } catch (e) {
+      print("error catchnya $e");
+      return null;
+    }
+  }
+
+  Future viewDospem1() async {
+    try {
+      String nmr = widget.nomor;
+      // String nmrQuery = nmr.toString();
+      print(nmr);
+
+      var url = Uri.https(
+          'project.mis.pens.ac.id',
+          '/mis112/siapa/mahasiswa/api/content/viewdosenpembimbing.php/',
+          {'function': 'viewDosen1', 'NOMOR': nmr});
+      // var response =
+      //     await http.get(url, headers: {"Accept": "application/json"});
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var jsonData = convert.jsonDecode(response.body);
+
+        return jsonData['data'];
+      } else {
+        print('No Response');
+      }
+    } catch (e) {
+      print("error catchnya $e");
+      return null;
+    }
+  }
+
+  Future viewDospem2() async {
+    try {
+      String nmr = widget.nomor;
+      // String nmrQuery = nmr.toString();
+      print(nmr);
+
+      var url = Uri.https(
+          'project.mis.pens.ac.id',
+          '/mis112/siapa/mahasiswa/api/content/viewdosenpembimbing.php/',
+          {'function': 'viewDosen2', 'NOMOR': nmr});
+      // var response =
+      //     await http.get(url, headers: {"Accept": "application/json"});
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var jsonData = convert.jsonDecode(response.body);
+
+        return jsonData['data'];
+      } else {
+        print('No Response');
+      }
+    } catch (e) {
+      print("error catchnya $e");
+      return null;
+    }
+  }
+
+  Future viewDospem3() async {
+    try {
+      String nmr = widget.nomor;
+      // String nmrQuery = nmr.toString();
+      print(nmr);
+
+      var url = Uri.https(
+          'project.mis.pens.ac.id',
+          '/mis112/siapa/mahasiswa/api/content/viewdosenpembimbing.php/',
+          {'function': 'viewDosen3', 'NOMOR': nmr});
       // var response =
       //     await http.get(url, headers: {"Accept": "application/json"});
       var response = await http.get(url);
@@ -123,7 +203,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                 EdgeInsets.fromLTRB(0, 4, 0, 0),
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              "${snapshot.data[index]["JUDUL"]}",
+                                              "${snapshot.data["JUDUL"]}",
                                               style: TextStyle(fontSize: 14),
                                               maxLines: 6,
                                               overflow: TextOverflow.ellipsis,
@@ -196,7 +276,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                 EdgeInsets.fromLTRB(0, 4, 0, 0),
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              "Aplikasi Administrasi Judul Proyek Berbasis Mobile PENS adskasdka daknd kasnd kand kasndkaskdn aksdn aksdnk anskdnaksdn kasdn kajndkasndkjanskdj nakdnakdnkandk andkansdkansdk nasdknakd nakdn kadka kandk ans dk ankan kdna kdnak dkan ka dansdk akdnaks dka da kakd kad kadn kadkadka dka kdn ak dakd akdn kadn kad ka dkad kad ka ndkand ka dkad ka dkan dkand kasdkka aksdn ask",
+                                              "${snapshot.data["RANGKUMAN"]}",
                                               style: TextStyle(fontSize: 14),
                                               maxLines: 6,
                                               overflow: TextOverflow.ellipsis,
@@ -207,7 +287,13 @@ class _DetailJudulState extends State<DetailJudul> {
                                     ),
                                     IconButton(
                                       alignment: Alignment.topRight,
-                                      onPressed: () {},
+                                     onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              _buildPopupRangkuman(context),
+                                        );
+                                      },
                                       icon: Icon(Icons.edit_outlined),
                                       color: Color(0xFF578BB8),
                                       iconSize: 30.0,
@@ -262,26 +348,91 @@ class _DetailJudulState extends State<DetailJudul> {
                                             margin:
                                                 EdgeInsets.fromLTRB(0, 4, 0, 0),
                                             alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "Pembimbing 1 : Rengga Asmara, S.Kom., M.T.",
-                                              style: TextStyle(
-                                                  color: Colors.black),
+                                            child: FutureBuilder<dynamic>(
+                                              future: viewDospem1(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.error != null) {
+                                                  return Text(
+                                                    "${snapshot.error}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
+                                                  );
+                                                }
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                } else {
+                                                  return Text(
+                                                    "Pembimbing 1 : ${snapshot.data["NAMA"]}",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  );
+                                                }
+                                              },
                                             ),
                                           ),
                                           Container(
                                             alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "Pembimbing 2 : Nana Ramadijanti, S.Kom, M.Kom",
-                                              style: TextStyle(
-                                                  color: Colors.black),
+                                            child: FutureBuilder<dynamic>(
+                                              future: viewDospem2(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.error != null) {
+                                                  return Text(
+                                                    "${snapshot.error}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
+                                                  );
+                                                }
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                } else {
+                                                  return Text(
+                                                    "Pembimbing 2 : ${snapshot.data["NAMA"]}",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  );
+                                                }
+                                              },
                                             ),
                                           ),
                                           Container(
                                             alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "Pembimbing 3 : ",
-                                              style: TextStyle(
-                                                  color: Colors.black),
+                                            child: FutureBuilder<dynamic>(
+                                              future: viewDospem3(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.error != null) {
+                                                  return Text(
+                                                    "${snapshot.error}",
+                                                    style:
+                                                        TextStyle(fontSize: 20),
+                                                  );
+                                                }
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                } else {
+                                                  if (snapshot.data != null) {
+                                                    return Text(
+                                                      "Pembimbing 3 : ${snapshot.data["NAMA"]}",
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    );
+                                                  } else {
+                                                    return Text(
+                                                      "Pembimbing 3 : ",
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    );
+                                                  }
+                                                }
+                                              },
                                             ),
                                           ),
                                         ],
@@ -356,7 +507,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                     0, 4, 0, 0),
                                                 alignment: Alignment.topLeft,
                                                 child: Text(
-                                                  "Diterima",
+                                                 ("${snapshot.data["STATUS"]}" == '1') ? "Diterima" : ("${snapshot.data["STATUS"]}" == '2') ? "Ditolak" : "Belum Diset",
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Color(0xff20B726)),
@@ -470,7 +621,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                 EdgeInsets.fromLTRB(0, 4, 0, 0),
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              "bla bal balbalbablabasbablbnalbnalsn ",
+                                              "${snapshot.data["CATATAN"]}",
                                               style: TextStyle(fontSize: 14),
                                               maxLines: 6,
                                               overflow: TextOverflow.ellipsis,
@@ -592,23 +743,26 @@ class _DetailJudulState extends State<DetailJudul> {
 
   Future updateJudul() async {
     // try {
-    
+
     String nmr = widget.nomor;
-      // String nmrQuery = nmr.toString();
-      print(nmr);
+    // String nmrQuery = nmr.toString();
+    print(nmr);
     // print(judul.text);
     http.Response hasil = await http.post(
-        Uri.https('project.mis.pens.ac.id',
-            '/mis112/siapa/mahasiswa/api/content/detailjudul.php', {'function' : 'editJudul'}),
+        Uri.https(
+            'project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
+            {'function': 'editJudul'}),
         body: convert.jsonEncode({
           'NOMOR': nmr,
-          'JUDUL': TextEditingController,
+          'JUDUL': judul.text,
         }),
         headers: {
           "Accept": "application/json",
         });
     // var dataUser = convert.jsonDecode(hasil.body);
     print(hasil.body);
+    // print(hasil.statusCode);
     if (hasil.statusCode == 200) {
       print("Judul Berhasil Diedit");
       return true;
@@ -624,8 +778,7 @@ class _DetailJudulState extends State<DetailJudul> {
     // }
   }
 
-
-  // TextEditingController judul = new TextEditingController();
+  TextEditingController judul = new TextEditingController();
   Widget _buildPopupDialog(BuildContext context) {
     return Center(
       child: Container(
@@ -641,91 +794,84 @@ class _DetailJudulState extends State<DetailJudul> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else {
+              judul.value = TextEditingValue(text: "${snapshot.data["JUDUL"]}");
               return Container(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: 1,
-                  itemBuilder: (BuildContext context, index) {
-                    return Container(
-                      child: new AlertDialog(
-                        title: const Text(
-                          'Edit Judul',
+                child: new AlertDialog(
+                  title: const Text(
+                    'Edit Judul',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5),
+                    textAlign: TextAlign.center,
+                  ),
+                  content: new Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Judul",
                           style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5),
-                          textAlign: TextAlign.center,
+                              fontSize: 20, fontWeight: FontWeight.w200),
                         ),
-                        content: new Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "Judul",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w200),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 340,
-                              height: 40,
-                              child: TextField(
-                                controller: TextEditingController(text: "${snapshot.data[index]["JUDUL"]}"),
-                                decoration: InputDecoration(
-                                  // prefixText: "${snapshot.data[index]["JUDUL"]}",
-                                  fillColor: Colors.white,
-                                  filled: false,
-                                  hintText: "Masukkan Judul",
-                                  hintStyle:
-                                      TextStyle(fontSize: 12, letterSpacing: 0.5),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              SizedBox(
-                                width: 110,
-                                child: new ElevatedButton(
-                                  onPressed: () {
-                                    // Navigator.of(context).pop();
-                                    updateJudul();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xffEF0000), // background
-                                    onPrimary: Colors.white, // foreground
-                                  ),
-                                  child: const Text('Batal'),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 110,
-                                child: new ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xff20B726), // background
-                                    onPrimary: Colors.white, // foreground
-                                  ),
-                                  child: const Text('Simpan'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
-                    );
-                  },
+                      SizedBox(
+                        width: 340,
+                        height: 40,
+                        child: TextField(
+                          controller: judul,
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: false,
+                            hintText: "Masukkan Judul Baru",
+                            hintStyle:
+                                TextStyle(fontSize: 12, letterSpacing: 0.5),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          width: 110,
+                          child: new ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Color(0xffEF0000), // background
+                              onPrimary: Colors.white, // foreground
+                            ),
+                            child: const Text('Batal'),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 110,
+                          child: new ElevatedButton(
+                            onPressed: () {
+                              updateJudul();
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) => Judul()));
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => DetailJudul()));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Color(0xff20B726), // background
+                              onPrimary: Colors.white, // foreground
+                            ),
+                            child: const Text('Simpan'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               );
             }
@@ -734,186 +880,506 @@ class _DetailJudulState extends State<DetailJudul> {
       ),
     );
   }
-}
 
 // pop up dosbing
-List<String> data = ["Brazil", "Italia (Disabled)", "Tunisia", 'Canada'];
-Widget _buildPopupPembimbing(BuildContext context) {
-  return new AlertDialog(
-    title: const Text(
-      'Edit Dosen Pembimbing',
-      style: TextStyle(
-          fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: 0.5),
-      textAlign: TextAlign.center,
-    ),
-    content: new Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Dosen Pembimbing 1",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
-          ),
-        ),
-        Container(
-          height: 40.0,
-          child: DropdownSearch<String>(
-              mode: Mode.MENU,
-              // showSelectedItem: true,
-              items: data,
-              hint: "country in menu mode",
-              popupItemDisabled: (String s) => s.startsWith('I'),
-              onChanged: print,
-              selectedItem: "Brazil"),
-        ),
-        Container(
-          margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Dosen Pembimbing 2",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
-          ),
-        ),
-        Container(
-          height: 40.0,
-          child: DropdownSearch<String>(
-              mode: Mode.MENU,
-              // showSelectedItem: true,
-              items: data,
-              hint: "country in menu mode",
-              popupItemDisabled: (String s) => s.startsWith('I'),
-              onChanged: print,
-              selectedItem: "Brazil"),
-        ),
-        Container(
-          margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Dosen Pembimbing 3",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
-          ),
-        ),
-        Container(
-          height: 40.0,
-          child: DropdownSearch<String>(
-              mode: Mode.MENU,
-              // showSelectedItem: true,
-              items: data,
-              hint: "country in menu mode",
-              popupItemDisabled: (String s) => s.startsWith('I'),
-              onChanged: print,
-              selectedItem: "Brazil"),
-        ),
-      ],
-    ),
-    actions: <Widget>[
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          SizedBox(
-            width: 110,
-            child: new ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xffEF0000), // background
-                onPrimary: Colors.white, // foreground
-              ),
-              child: const Text('Batal'),
-            ),
-          ),
-          SizedBox(
-            width: 110,
-            child: new ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xff20B726), // background
-                onPrimary: Colors.white, // foreground
-              ),
-              child: const Text('Simpan'),
-            ),
-          ),
-        ],
-      ),
-    ],
-  );
-}
+  String? nomordosen1;
+  String? nomordosen2;
+  String? nomordosen3;
 
-// pop up catatan
-Widget _buildPopupCatatan(BuildContext context) {
-  return new AlertDialog(
-    title: const Text(
-      'Edit Catatan',
-      style: TextStyle(
-          fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: 0.5),
-      textAlign: TextAlign.center,
-    ),
-    content: new Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Catatan",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
-          ),
-        ),
-        SizedBox(
-          width: 340,
-          height: 40,
-          child: TextField(
-            decoration: InputDecoration(
-              fillColor: Colors.white,
-              filled: false,
-              hintText: "Masukkan Catatan",
-              hintStyle: TextStyle(fontSize: 12, letterSpacing: 0.5),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
+  Future updateDosbing() async {
+    // try {
+
+    String nmr = widget.nomor;
+    // String nmrQuery = nmr.toString();
+    print(nmr);
+    // print(judul.text);
+    http.Response hasil = await http.post(
+        Uri.https(
+            'project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
+            {'function': 'editDosenPembimbing'}),
+        body: convert.jsonEncode({
+          'NOMOR': nmr,
+          'PEMBIMBING1': nomordosen1,
+          'PEMBIMBING2': nomordosen2,
+          'PEMBIMBING3': nomordosen3,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+    // var dataUser = convert.jsonDecode(hasil.body);
+    print(hasil.body);
+    // print(hasil.statusCode);
+    if (hasil.statusCode == 200) {
+      print("Dosen Berhasil Diedit");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
+      print("Login Gagal");
+      return false;
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  Widget _buildPopupPembimbing(BuildContext context) {
+    return new AlertDialog(
+      title: const Text(
+        'Edit Dosen Pembimbing',
+        style: TextStyle(
+            fontSize: 20, fontWeight: FontWeight.w500, letterSpacing: 0.5),
+        textAlign: TextAlign.center,
+      ),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Dosen Pembimbing 1",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
             ),
           ),
-        ),
-      ],
-    ),
-    actions: <Widget>[
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          SizedBox(
-            width: 110,
-            child: new ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xffEF0000), // background
-                onPrimary: Colors.white, // foreground
+          Container(
+            height: 40.0,
+            child: DropdownSearch<NamaDosen>(
+              mode: Mode.MENU,
+              showSearchBox: true,
+              // searchBoxController: dosbing3,
+              hint: "Pilih Dosen",
+              onChanged: (value) => nomordosen1 = value?.nomor,
+              dropdownBuilder: (context, selectedItem) =>
+                  Text(selectedItem?.nama ?? "Belum Memilih Dosen"),
+              popupItemBuilder: (context, item, isSelected) => ListTile(
+                title: Text(item.nama),
               ),
-              child: const Text('Batal'),
+              onFind: (text) async {
+                var url = Uri.https('project.mis.pens.ac.id',
+                    '/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
+                var response = await http.get(url);
+                if (response.statusCode == 200) {
+                  List namadosen = (convert.jsonDecode(response.body)
+                      as Map<String, dynamic>)['data'];
+                  List<NamaDosen> dosen = [];
+                  namadosen.forEach((element) {
+                    dosen.add(NamaDosen(
+                        nomor: element["NOMOR"],
+                        nama: element["NAMA"],
+                        gelarDpn: element["GELAR_DPN"],
+                        gelarBlk: element["GELAR_BLK"]));
+                  });
+                  return dosen;
+                } else {
+                  return [];
+                }
+              },
             ),
           ),
-          SizedBox(
-            width: 110,
-            child: new ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xff20B726), // background
-                onPrimary: Colors.white, // foreground
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Dosen Pembimbing 2",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+            ),
+          ),
+          Container(
+            height: 40.0,
+            child: DropdownSearch<NamaDosen>(
+              mode: Mode.MENU,
+              showSearchBox: true,
+              // searchBoxController: dosbing3,
+              hint: "Pilih Dosen",
+              onChanged: (value) => nomordosen2 = value?.nomor,
+              dropdownBuilder: (context, selectedItem) =>
+                  Text(selectedItem?.nama ?? "Belum Memilih Dosen"),
+              popupItemBuilder: (context, item, isSelected) => ListTile(
+                title: Text(item.nama),
               ),
-              child: const Text('Simpan'),
+              onFind: (text) async {
+                var url = Uri.https('project.mis.pens.ac.id',
+                    '/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
+                var response = await http.get(url);
+                if (response.statusCode == 200) {
+                  List namadosen = (convert.jsonDecode(response.body)
+                      as Map<String, dynamic>)['data'];
+                  List<NamaDosen> dosen = [];
+                  namadosen.forEach((element) {
+                    dosen.add(NamaDosen(
+                        nomor: element["NOMOR"],
+                        nama: element["NAMA"],
+                        gelarDpn: element["GELAR_DPN"],
+                        gelarBlk: element["GELAR_BLK"]));
+                  });
+                  return dosen;
+                } else {
+                  return [];
+                }
+              },
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Dosen Pembimbing 3",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),
+            ),
+          ),
+          Container(
+            height: 40.0,
+            child: DropdownSearch<NamaDosen>(
+              mode: Mode.MENU,
+              showSearchBox: true,
+              // searchBoxController: dosbing3,
+              hint: "Pilih Dosen",
+              onChanged: (value) => nomordosen3 = value?.nomor,
+              dropdownBuilder: (context, selectedItem) =>
+                  Text(selectedItem?.nama ?? "Belum Memilih Dosen"),
+              popupItemBuilder: (context, item, isSelected) => ListTile(
+                title: Text(item.nama),
+              ),
+              onFind: (text) async {
+                var url = Uri.https('project.mis.pens.ac.id',
+                    '/mis112/siapa/mahasiswa/api/content/getnamapegawai.php/');
+                var response = await http.get(url);
+                if (response.statusCode == 200) {
+                  List namadosen = (convert.jsonDecode(response.body)
+                      as Map<String, dynamic>)['data'];
+                  List<NamaDosen> dosen = [];
+                  namadosen.forEach((element) {
+                    dosen.add(NamaDosen(
+                        nomor: element["NOMOR"],
+                        nama: element["NAMA"],
+                        gelarDpn: element["GELAR_DPN"],
+                        gelarBlk: element["GELAR_BLK"]));
+                  });
+                  return dosen;
+                } else {
+                  return [];
+                }
+              },
             ),
           ),
         ],
       ),
-    ],
-  );
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            SizedBox(
+              width: 110,
+              child: new ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xffEF0000), // background
+                  onPrimary: Colors.white, // foreground
+                ),
+                child: const Text('Batal'),
+              ),
+            ),
+            SizedBox(
+              width: 110,
+              child: new ElevatedButton(
+                onPressed: () {
+                  updateDosbing();
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => Judul()));
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xff20B726), // background
+                  onPrimary: Colors.white, // foreground
+                ),
+                child: const Text('Simpan'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // pop up catatan
+  Future updateCatatan() async {
+    // try {
+
+    String nmr = widget.nomor;
+    // String nmrQuery = nmr.toString();
+    print(nmr);
+    // print(judul.text);
+    http.Response hasil = await http.post(
+        Uri.https(
+            'project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
+            {'function': 'editCatatan'}),
+        body: convert.jsonEncode({
+          'NOMOR': nmr,
+          'CATATAN': catatan.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+    // var dataUser = convert.jsonDecode(hasil.body);
+    print(hasil.body);
+    // print(hasil.statusCode);
+    if (hasil.statusCode == 200) {
+      print("Judul Berhasil Diedit");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
+      print("Login Gagal");
+      return false;
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  TextEditingController catatan = new TextEditingController();
+  Widget _buildPopupCatatan(BuildContext context) {
+    return Container(
+      child: FutureBuilder<dynamic>(
+        future: updateCatatan(),
+        builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return Text(
+              "${snapshot.error}",
+              style: TextStyle(fontSize: 20),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+             catatan.value = TextEditingValue(text: "tes");
+            return Container(
+              child: new AlertDialog(
+                title: const Text(
+                  'Edit Catatan',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5),
+                  textAlign: TextAlign.center,
+                ),
+                content: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Catatan",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w200),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 340,
+                      height: 40,
+                      child: TextField(
+                        controller: catatan,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: false,
+                          hintText: "Masukkan Catatan",
+                          hintStyle:
+                              TextStyle(fontSize: 12, letterSpacing: 0.5),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xffEF0000), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Batal'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                             updateCatatan();
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) => Judul()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff20B726), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Simpan'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  // pop up rangkuman
+  Future updateRangkuman() async {
+    // try {
+
+    String nmr = widget.nomor;
+    // String nmrQuery = nmr.toString();
+    print(nmr);
+    // print(judul.text);
+    http.Response hasil = await http.post(
+        Uri.https(
+            'project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
+            {'function': 'editRangkuman'}),
+        body: convert.jsonEncode({
+          'NOMOR': nmr,
+          'RANGKUMAN': rangkuman.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+    // var dataUser = convert.jsonDecode(hasil.body);
+    print(hasil.body);
+    // print(hasil.statusCode);
+    if (hasil.statusCode == 200) {
+      print("Rangkuman Berhasil Diedit");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
+      print("Login Gagal");
+      return false;
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  TextEditingController rangkuman = new TextEditingController();
+  Widget _buildPopupRangkuman(BuildContext context) {
+    return Container(
+      child: FutureBuilder<dynamic>(
+        future: viewDetailJudul(),
+        builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return Text(
+              "${snapshot.error}",
+              style: TextStyle(fontSize: 20),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+             rangkuman.value = TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
+            return Container(
+              child: new AlertDialog(
+                title: const Text(
+                  'Edit Catatan',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5),
+                  textAlign: TextAlign.center,
+                ),
+                content: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Rangkuman",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w200),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 340,
+                      height: 350,
+                      child: TextField(
+                        controller: rangkuman,
+                        maxLines: 20,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: false,
+                          hintText: "Masukkan Catatan",
+                          hintStyle:
+                              TextStyle(fontSize: 12, letterSpacing: 0.5),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xffEF0000), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Batal'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                             updateRangkuman();
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) => Judul()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff20B726), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Simpan'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
 }

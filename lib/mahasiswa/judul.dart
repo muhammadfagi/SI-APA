@@ -77,6 +77,71 @@ class _JudulState extends State<Judul> {
     }
   }
 
+  // Future ambilJudul(nomor) async {
+  //   // try {
+
+  //   // var status;
+  //   // if (value == "Diterima") {
+  //   //   status = 1;
+  //   // } else if (value == "Ditolak") {
+  //   //   status = 2;
+  //   // }
+  //   http.Response hasil = await http.post(
+  //       Uri.https('project.mis.pens.ac.id',
+  //           '/mis112/siapa/mahasiswa/api/content/juduldiambil.php'),
+  //       body: convert.jsonEncode({
+  //         'NOMOR': nomor,
+  //         // 'JUDUL': judul,
+  //         // 'DOSEN1': dosen1,
+  //         // 'DOSEN2': dosen2,
+  //         // 'DOSEN3': dosen3,
+  //         // 'NRP': nrp,
+  //         // 'TANGGAL_ENTRI': tanggalentri
+  //       }),
+  //       headers: {
+  //         "Accept": "application/json",
+  //       });
+  //   // var dataUser = convert.jsonDecode(hasil.body);
+  //   print(hasil.body);
+  //   // print(nomor);
+  //   // print(hasil.statusCode);
+  //   if (hasil.statusCode == 200) {
+  //     print("Judul Berhasil Diambil");
+  //     return true;
+  //   } else {
+  //     print("error status " + hasil.statusCode.toString());
+  //     print("Login Gagal");
+  //     return false;
+  //   }
+  //   // } catch (e) {
+  //   //   print("error catchnya $e");
+  //   //   print("error");
+  //   //   return null;
+  //   // }
+  // }
+
+  Future ambilJudul(nomor) async {
+    try {
+      var url = Uri.https(
+          'project.mis.pens.ac.id',
+          '/mis112/siapa/mahasiswa/api/content/juduldiambil.php',
+          {'nomor': nomor});
+      var response = await http.get(url);
+      var jsonData = convert.jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(jsonData['data']);
+        print("Judul Berhasil Diambil");
+        return jsonData['data'];
+      } else {
+        print('Gagal');
+      }
+    } catch (e) {
+      print("error catchnya $e");
+      print("error");
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final MediaQueryHeight = MediaQuery.of(context).size.height;
@@ -335,30 +400,65 @@ class _JudulState extends State<Judul> {
                                                       .spaceBetween,
                                               children: [
                                                 Container(
-                                                  width: 60,
+                                                  width: 80,
                                                   height: 23,
-                                                  child: ElevatedButton(
-                                                    style: ButtonStyle(
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all<Color>(Color(
-                                                                  0xffc4c4c4)),
-                                                      shape: MaterialStateProperty.all<
-                                                              RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      )),
-                                                    ),
-                                                    child: Text(
-                                                      "Ambil",
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.black),
-                                                    ),
-                                                    onPressed: () {},
-                                                  ),
+                                                  child:
+                                                      ("${snapshot.data[index]["STATUS"]}" == '1')
+                                                          ? (("${snapshot.data[index]["AMBIL"]}" == '1') ? Text("Diambil",
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xff20B726))
+                                                            ) : ("${snapshot.data[index]["AMBIL"]}" =='2') ? Text("Tidak Diambil",
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xff20B726))) :  ElevatedButton(
+                                                              style:
+                                                                  ButtonStyle(
+                                                                backgroundColor:
+                                                                    MaterialStateProperty.all<
+                                                                            Color>(
+                                                                        Color(
+                                                                            0xffc4c4c4)),
+                                                                shape: MaterialStateProperty.all<
+                                                                        RoundedRectangleBorder>(
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5),
+                                                                )),
+                                                              ),
+                                                              child: Text(
+                                                                "Ambil",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Colors
+                                                                        .black),
+                                                              ),
+                                                              onPressed: () {
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder: (BuildContext
+                                                                          context) =>
+                                                                      _buildPopupAmbilJudul(
+                                                                          context),
+                                                                );
+                                                              },
+                                                            ))
+                                                          : Text(
+                                                              ("${snapshot.data[index]["STATUS"]}" ==
+                                                                      '2')
+                                                                  ? "Ditolak"
+                                                                  : "Belum Diset",
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xff20B726)),
+                                                            ),
                                                 ),
                                                 Row(
                                                   mainAxisAlignment:
@@ -439,6 +539,175 @@ class _JudulState extends State<Judul> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future statusAmbil(nomor) async {
+    // try {
+    http.Response hasil = await http.post(
+        Uri.https('project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/statusambil.php'),
+        body: convert.jsonEncode({
+          'nomor': nomor,
+          // 'TAHUN_AJARAN': tahunajaran.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+    print(hasil.body);
+    if (hasil.statusCode == 200) {
+      print("Judul Berhasil Diambil");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
+      print("Gagal");
+      return false;
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  Future tahunAjaran(nomor) async {
+    // try {
+    http.Response hasil = await http.post(
+        Uri.https('project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/juduldiambil.php'),
+        body: convert.jsonEncode({
+          'nomor': nomor,
+          'TAHUN_AJARAN': tahunajaran.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+    print(hasil.body);
+    if (hasil.statusCode == 200) {
+      print("Tahun Ajaran Berhasil Ditambahkan");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
+      print("Gagal");
+      return false;
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  TextEditingController tahunajaran = TextEditingController();
+  Widget _buildPopupAmbilJudul(BuildContext context) {
+    return Container(
+      child: FutureBuilder<dynamic>(
+        future: viewJudul(),
+        builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return Text(
+              "${snapshot.error}",
+              style: TextStyle(fontSize: 20),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return Container(
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(), // new
+                controller: _controller,
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, index) {
+                  return Container(
+                    child: new AlertDialog(
+                      title: const Text(
+                        'Tahun Ajaran',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5),
+                        textAlign: TextAlign.center,
+                      ),
+                      content: new Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Tahun Ajaran",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w200),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 340,
+                            height: 40,
+                            child: TextField(
+                              controller: tahunajaran,
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: false,
+                                hintText: "Masukkan Tahun Ajaran",
+                                hintStyle:
+                                    TextStyle(fontSize: 12, letterSpacing: 0.5),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      actions: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(
+                              width: 110,
+                              child: new ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xffEF0000), // background
+                                  onPrimary: Colors.white, // foreground
+                                ),
+                                child: const Text('Batal'),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 110,
+                              child: new ElevatedButton(
+                                onPressed: () {
+                                  tahunAjaran(snapshot.data[index]["NOMOR"]);
+                                  statusAmbil(snapshot.data[index]["NOMOR"]);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => Judul()));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color(0xff20B726), // background
+                                  onPrimary: Colors.white, // foreground
+                                ),
+                                child: const Text('Simpan'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }
