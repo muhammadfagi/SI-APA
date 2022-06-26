@@ -4,7 +4,7 @@ import 'package:siapa/dosen/detailtopik.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
 import 'package:siapa/koordinator/tanggal.dart';
-import 'package:siapa/login.dart';
+import 'package:siapa/login/login.dart';
 
 class PenawaranJudulKoor extends StatefulWidget {
   const PenawaranJudulKoor({Key? key}) : super(key: key);

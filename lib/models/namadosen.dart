@@ -16,10 +16,10 @@ class NamaDosen {
         required this.gelarBlk,
     });
 
-    String nomor;
-    String nama;
-    String gelarDpn;
-    String gelarBlk;
+    var nomor;
+    var nama;
+    var gelarDpn;
+    var gelarBlk;
 
     factory NamaDosen.fromJson(Map<String, dynamic> json) => NamaDosen(
         nomor: json["NOMOR"],

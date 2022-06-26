@@ -5,13 +5,15 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:siapa/koordinator/penawaranjudulkoor.dart';
 import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
-import 'package:siapa/login.dart';
+import 'package:siapa/login/login.dart';
 import 'package:http/http.dart' as http;
+import 'package:siapa/login/pilihlogin.dart';
 import 'dart:convert' as convert;
 import 'dart:async';
 import '../models/namadosen.dart';
 import '../models/status.dart';
 import 'package:siapa/mahasiswa/penawarantopik.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class JudulMahasiswa extends StatefulWidget {
   const JudulMahasiswa({Key? key}) : super(key: key);
@@ -23,15 +25,15 @@ class JudulMahasiswa extends StatefulWidget {
 class _JudulMahasiswaState extends State<JudulMahasiswa> {
   String? setstatus;
   TextEditingController searchnrp = TextEditingController();
-  Future viewJudulMahasiswa() async {
-    var url = Uri.https('project.mis.pens.ac.id',
-        '/mis112/siapa/koordinator/api/content/judulmahasiswa.php');
 
+  Future viewJudulMahasiswa() async {
+    int nip = await SessionManager().get('nip');
+    String nipQuery = nip.toString();
+    var url = Uri.https('project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/judulmahasiswa.php', {'nip' : nipQuery});
     var response = await http.get(url);
     var jsonData = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
-      // print(jsonData['data']['JUDUL']);
-
       return jsonData['data'];
     } else {
       print('No Response');
@@ -224,7 +226,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                   onTap: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                      return Login();
+                      return PilihLogin();
                     }));
                   },
                   leading: Icon(Icons.logout),

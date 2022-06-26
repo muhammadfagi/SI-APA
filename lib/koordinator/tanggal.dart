@@ -4,7 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
-import 'package:siapa/login.dart';
+import 'package:siapa/login/login.dart';
+import '../models/jurusan.dart';
+import '../models/program.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import 'dart:async';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class Tanggal extends StatefulWidget {
   const Tanggal({Key? key}) : super(key: key);
@@ -14,60 +20,70 @@ class Tanggal extends StatefulWidget {
 }
 
 class _TanggalState extends State<Tanggal> {
-  List<String> data = [
-    "Brazil",
-    "Italia (Disabled)",
-    "Tunisia",
-    "Canada",
-    "Thailand",
-    'Malaysia'
-  ];
+  String? jurusan;
+  String? program;
 
   TextEditingController dateinputawal = TextEditingController();
-
-  @override
-  void initStateAwal() {
-    dateinputawal.text = ""; //set the initial value of text field
-    super.initState();
-  }
-
-  TextEditingController timeinput = TextEditingController();
-  //text editing controller for text field
-
-  @override
-  void initState() {
-    timeinput.text = ""; //set the initial value of text field
-    super.initState();
-  }
-
-  Future<Null> _selectTanggalAwal(BuildContext context) async {
-    DateTime? _datePickerAwal = await showDatePicker(
+  TextEditingController dateinputakhir = TextEditingController();
+  Future _selectTanggal() async {
+    DateTimeRange? newDateRange = await showDateRangePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2050),
+      initialDateRange: dateRange,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
     );
 
-    if (_datePickerAwal != null) {
-      print(
-          _datePickerAwal); //pickedDate output format => 2021-03-10 00:00:00.000
-      String formattedDate = DateFormat('yyyy-MM-dd').format(_datePickerAwal);
-      print(
-          formattedDate); //formatted date output using intl package =>  2021-03-16
+    if (newDateRange == null) return;
 
-      setState(() {
-        dateinputawal.text =
-            formattedDate; //set output date to TextField value.
-      });
+    setState(() => dateRange = newDateRange);
+  }
+
+  DateTimeRange dateRange = DateTimeRange(
+    start: DateTime.now(),
+    end: DateTime.now(),
+  );
+
+  Future setTanggal() async {
+    // try {
+    http.Response hasil = await http.post(
+        Uri.https('project.mis.pens.ac.id',
+            '/mis112/siapa/koordinator/api/content/tanggal.php'),
+        body: convert.jsonEncode({
+          'JURUSAN': jurusan,
+          'PROGRAM': program,
+          'TANGGAL_AWAL': dateinputawal.text,
+          'TANGGAL_AKHIR': dateinputakhir.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+
+    print(hasil.body);
+    if (hasil.statusCode == 200) {
+      print("Berhasil Set Tanggal");
+      return true;
     } else {
-      print("Date is not selected");
+      print("error status " + hasil.statusCode.toString());
+      print("Gagal");
+      return false;
     }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
+    final start = dateRange.start;
+    final end = dateRange.end;
     final MediaQueryHeight = MediaQuery.of(context).size.height;
     final MediaQueryWidth = MediaQuery.of(context).size.width;
+    dateinputawal.value =
+        TextEditingValue(text: "${start.day}-${start.month}-${start.year}");
+    dateinputakhir.value =
+        TextEditingValue(text: "${end.day}-${end.month}-${end.year}");
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -212,15 +228,39 @@ class _TanggalState extends State<Tanggal> {
                     ),
                   ),
                   Container(
-                    // height: 40.0,
-                    child: DropdownSearch<String>(
-                        mode: Mode.MENU,
-                        // showSelectedItem: true,
-                        items: data,
-                        hint: "country in menu mode",
-                        // popupItemDisabled: (String s) => s.startsWith('I'),
-                        onChanged: print,
-                        selectedItem: "Brazil"),
+                    height: 40.0,
+                    child: DropdownSearch<Program>(
+                      mode: Mode.MENU,
+                      showSearchBox: true,
+                      onChanged: (value) => program = value?.nomor,
+                      dropdownBuilder: (context, selectedItem) =>
+                          Text(selectedItem?.program ?? "Pilih Program"),
+                      popupItemBuilder: (context, item, isSelected) => ListTile(
+                        title: Text(item.program),
+                      ),
+                      onFind: (text) async {
+                        int nip = await SessionManager().get('nip');
+                        String nipQuery = nip.toString();
+                        var url = Uri.https(
+                            'project.mis.pens.ac.id',
+                            '/mis112/siapa/koordinator/api/content/getprogram.php/',
+                            {'nip': nipQuery});
+                        var response = await http.get(url);
+                        if (response.statusCode == 200) {
+                          List namaprogram = (convert.jsonDecode(response.body)
+                              as Map<String, dynamic>)['data'];
+                          List<Program> listprogram = [];
+                          namaprogram.forEach((element) {
+                            listprogram.add(Program(
+                                program: element["PROGRAM"],
+                                nomor: element["NOMOR"]));
+                          });
+                          return listprogram;
+                        } else {
+                          return [];
+                        }
+                      },
+                    ),
                   ),
                   Container(
                     margin: EdgeInsets.fromLTRB(0, 17, 269, 6),
@@ -231,91 +271,131 @@ class _TanggalState extends State<Tanggal> {
                     ),
                   ),
                   Container(
-                    // height: 40.0,
-                    child: DropdownSearch<String>(
-                        mode: Mode.MENU,
-                        // showSelectedItem: true,
-                        items: data,
-                        hint: "country in menu mode",
-                        popupItemDisabled: (String s) => s.startsWith('I'),
-                        onChanged: print,
-                        selectedItem: "Brazil"),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 17, 223, 6),
-                    child: Text(
-                      "Tanggal Mulai",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    height: 40.0,
+                    child: DropdownSearch<Jurusan>(
+                      mode: Mode.MENU,
+                      showSearchBox: true,
+                      onChanged: (value) => jurusan = value?.nomor,
+                      dropdownBuilder: (context, selectedItem) =>
+                          Text(selectedItem?.jurusan ?? "Pilih Jurusan"),
+                      popupItemBuilder: (context, item, isSelected) => ListTile(
+                        title: Text(item.jurusan),
+                      ),
+                      onFind: (text) async {
+                        int nip = await SessionManager().get('nip');
+                        String nipQuery = nip.toString();
+                        var url = Uri.https(
+                            'project.mis.pens.ac.id',
+                            '/mis112/siapa/koordinator/api/content/getjurusan.php/',
+                            {'nip': nipQuery});
+                        var response = await http.get(url);
+                        if (response.statusCode == 200) {
+                          List namajurusan = (convert.jsonDecode(response.body)
+                              as Map<String, dynamic>)['data'];
+                          List<Jurusan> listjurusan = [];
+                          namajurusan.forEach((element) {
+                            listjurusan.add(Jurusan(
+                                jurusan: element["JURUSAN"],
+                                nomor: element["NOMOR"]));
+                          });
+                          return listjurusan;
+                        } else {
+                          return [];
+                        }
+                      },
                     ),
                   ),
-                  TextField(
-                    readOnly: true,
-                    controller: dateinputawal,
-                    onTap: () {
-                      setState(() {
-                        _selectTanggalAwal(context);
-                      });
-                    },
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: false,
-                      hintText: "Pilih Tanggal",
-                      hintStyle: TextStyle(fontSize: 12),
-                      suffixIcon: Icon(Icons.date_range_outlined),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 17, 202, 6),
-                    child: Text(
-                      "Tanggal Berakhir",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  TextField(
-                    readOnly: true,
-                    controller: timeinput,
-                    onTap: () async {
-                      TimeOfDay? pickedTime = await showTimePicker(
-                        initialTime: TimeOfDay.now(),
-                        context: context,
-                      );
-                      if (pickedTime != null) {
-                        print(pickedTime.format(context)); //output 10:51 PM
-                        DateTime? parsedTime = DateFormat.jm()
-                            .parse(pickedTime.format(context).toString());
-                        //converting to DateTime so that we can further format on different pattern.
-                        print(parsedTime); //output 1970-01-01 22:53:00.000
-                        String? formattedTime =
-                            DateFormat('hh:mm:ss').format(parsedTime);
-                        print(formattedTime); //output 14:59:00
-                        //DateFormat() is from intl package, you can format the time on any pattern you need.
-
-                        setState(() {
-                          timeinput.text =
-                              formattedTime; //set the value of text field.
-                        });
-                      } else {
-                        print("Time is not selected");
-                      }
-                    },
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: false,
-                      hintText: "Pilih Tanggal",
-                      hintStyle: TextStyle(fontSize: 12),
-                      suffixIcon: Icon(Icons.date_range_outlined),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 17, 0, 6),
+                            child: Text(
+                              "Tanggal Mulai",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Container(
+                            width: 130,
+                            // margin: EdgeInsets.only(right: 10.0),
+                            child: TextField(
+                              readOnly: true,
+                              controller: dateinputawal,
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: false,
+                                hintText: "Pilih Tanggal",
+                                hintStyle: TextStyle(fontSize: 12),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 17, 0, 6),
+                            child: Text(
+                              "Tanggal Berakhir",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Container(
+                            width: 130,
+                            child: TextField(
+                              readOnly: true,
+                              controller: dateinputakhir,
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: false,
+                                hintText: "Pilih Tanggal",
+                                hintStyle: TextStyle(fontSize: 12),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Container(
+                            height: 41,
+                          ),
+                          Container(
+                            // alignment: Alignment.bottomCenter,
+                            width: 55,
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectTanggal();
+                                });
+                              },
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Color(0xff578BB8)),
+                              ),
+                              child: Icon(
+                                Icons.date_range_outlined,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   Container(
                     width: 508,
                     height: 45,
-                    margin: EdgeInsets.only(top: 11.0),
+                    margin: EdgeInsets.only(top: 17.0),
                     child: ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor:
@@ -327,10 +407,12 @@ class _TanggalState extends State<Tanggal> {
                         )),
                       ),
                       child: Text(
-                        "Login",
+                        "Simpan",
                         style: TextStyle(fontSize: 20),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        setTanggal();
+                      },
                     ),
                   ),
                 ],

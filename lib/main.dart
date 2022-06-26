@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:siapa/login.dart';
+import 'package:siapa/login/login.dart';
 import 'dart:io';
+
+import 'package:siapa/login/pilihlogin.dart';
 
 class MyHttpOverrides extends HttpOverrides{
   @override
@@ -25,7 +27,7 @@ class SIAPA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Login(),
+      home: PilihLogin(),
     );
   }
 }

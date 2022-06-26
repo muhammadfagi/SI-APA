@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:siapa/mahasiswa/detailjudul.dart';
@@ -7,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
 import '../models/namadosen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailJudul extends StatefulWidget {
   final String nomor;
@@ -120,6 +123,15 @@ class _DetailJudulState extends State<DetailJudul> {
       print("error catchnya $e");
       return null;
     }
+  }
+
+  void openFile({bool forceWebView = false, bool enableJavascript = true}) async {
+    final url = Uri.https(
+        'project.mis.pens.ac.id', '/mis112/contents/fileberkas/81.pdf');
+
+    // try {
+      await launchUrl(url);
+    // } catch (e) {}
   }
 
   @override
@@ -287,7 +299,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                     ),
                                     IconButton(
                                       alignment: Alignment.topRight,
-                                     onPressed: () {
+                                      onPressed: () {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) =>
@@ -507,7 +519,13 @@ class _DetailJudulState extends State<DetailJudul> {
                                                     0, 4, 0, 0),
                                                 alignment: Alignment.topLeft,
                                                 child: Text(
-                                                 ("${snapshot.data["STATUS"]}" == '1') ? "Diterima" : ("${snapshot.data["STATUS"]}" == '2') ? "Ditolak" : "Belum Diset",
+                                                  ("${snapshot.data["STATUS"]}" ==
+                                                          '1')
+                                                      ? "Diterima"
+                                                      : ("${snapshot.data["STATUS"]}" ==
+                                                              '2')
+                                                          ? "Ditolak"
+                                                          : "Belum Diset",
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Color(0xff20B726)),
@@ -711,17 +729,31 @@ class _DetailJudulState extends State<DetailJudul> {
                                                   )),
                                                 ),
                                                 child: Text(
-                                                  "Download",
+                                                  "Open File",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.black),
                                                 ),
-                                                onPressed: () {},
+                                                onPressed: openFile,
                                               ),
                                             ),
                                           ),
+                                          Text("${snapshot.data["NOMOR"]}.pdf"),
                                         ],
                                       ),
+                                    ),
+                                    IconButton(
+                                      alignment: Alignment.topRight,
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              _buildPopupCatatan(context),
+                                        );
+                                      },
+                                      icon: Icon(Icons.edit_outlined),
+                                      color: Color(0xFF578BB8),
+                                      iconSize: 30.0,
                                     ),
                                   ],
                                 ),
@@ -1159,7 +1191,7 @@ class _DetailJudulState extends State<DetailJudul> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else {
-             catatan.value = TextEditingValue(text: "tes");
+            catatan.value = TextEditingValue(text: "tes");
             return Container(
               child: new AlertDialog(
                 title: const Text(
@@ -1222,9 +1254,9 @@ class _DetailJudulState extends State<DetailJudul> {
                         width: 110,
                         child: new ElevatedButton(
                           onPressed: () {
-                             updateCatatan();
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => Judul()));
+                            updateCatatan();
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) => Judul()));
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xff20B726), // background
@@ -1297,7 +1329,8 @@ class _DetailJudulState extends State<DetailJudul> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else {
-             rangkuman.value = TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
+            rangkuman.value =
+                TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
             return Container(
               child: new AlertDialog(
                 title: const Text(
@@ -1361,9 +1394,9 @@ class _DetailJudulState extends State<DetailJudul> {
                         width: 110,
                         child: new ElevatedButton(
                           onPressed: () {
-                             updateRangkuman();
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => Judul()));
+                            updateRangkuman();
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) => Judul()));
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xff20B726), // background

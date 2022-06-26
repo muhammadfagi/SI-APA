@@ -1,15 +1,15 @@
-import 'dart:ui';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:siapa/mahasiswa/tambahjudul.dart';
 import 'package:siapa/mahasiswa/judul.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
-import 'package:flutter_session/flutter_session.dart';
 import '../models/namadosen.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:path/path.dart';
 
 class TambahJudul extends StatefulWidget {
   const TambahJudul({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _TambahJudulState extends State<TambahJudul> {
 
   Future getNomor() async {
     try {
-      int nrp = await FlutterSession().get('nrp');
+      int nrp = await SessionManager().get('nrp');
       String nrpQuery = nrp.toString();
       var url = Uri.https(
           'project.mis.pens.ac.id',
@@ -46,8 +46,7 @@ class _TambahJudulState extends State<TambahJudul> {
       if (response.statusCode == 200) {
         dynamic jsonData = convert.jsonDecode(response.body);
         var nomor = jsonData['data']['NOMOR'];
-        await FlutterSession().set('NOMOR', jsonData['data']['NOMOR']);
-        print(nomor);
+        await SessionManager().set('NOMOR', jsonData['data']['NOMOR']);
         print(jsonData['data']['NOMOR']);
         return jsonData['data']['NOMOR'];
       } else {
@@ -69,7 +68,7 @@ class _TambahJudulState extends State<TambahJudul> {
       if (response.statusCode == 200) {
         dynamic jsonData = convert.jsonDecode(response.body);
         var namapegawai = jsonData['data'].toString();
-        // await FlutterSession().set('NAMA', jsonData['data']);
+        await SessionManager().set('NAMA', jsonData['data']);
         print(namapegawai);
         return jsonData['data'];
       } else {
@@ -81,42 +80,81 @@ class _TambahJudulState extends State<TambahJudul> {
     }
   }
 
+  // FilePickerResult? _file;
+  // Future getFile() async {
+  //   FilePickerResult? result = await FilePicker.platform
+  //       .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+  //   if (result != null) {
+  //     PlatformFile file = result.files.first;
+  //     print(file.name);
+  //     print(file.path);
+  //     // var multipartFile = await MultipartFile.fromFile(_filepath.path);
+  //   } else {
+  //     // User canceled the picker
+  //   }
+  //   // setState(() {
+  //   //   _file = ;
+  //   // });
+  // }
+
+  List<PlatformFile>? _files;
+
+  void _openFile() async {
+    _files = (await FilePicker.platform
+            .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']))!
+        .files;
+  }
+
   Future tambahJudul() async {
     // try {
-
-    int nomor = await FlutterSession().get('NOMOR');
+    int nomor = await SessionManager().get('NOMOR');
     String nomorQuery = nomor.toString();
-    // String namapegawai1 = await FlutterSession().get('NAMA');
-    // String namapegawai2 = await FlutterSession().get('NAMA');
-    // String namapegawai3 = await FlutterSession().get('NAMA');
+    // print(judul.text);
     print(nomorQuery);
-    print(judul.text);
-    http.Response hasil = await http.post(
-        Uri.https('project.mis.pens.ac.id',
-            '/mis112/siapa/mahasiswa/api/content/tambahjudul.php'),
-        body: convert.jsonEncode({
-          'NOMOR': nomorQuery,
-          'JUDUL': judul.text,
-          'RANGKUMAN': rangkuman.text,
-          'PEMBIMBING1': nomordosen1,
-          'PEMBIMBING2': nomordosen2,
-          'PEMBIMBING3': nomordosen3,
-          'PRIORITAS': prioritas.text,
-          // 'DOKUMEN': dokumen.text,
-        }),
-        headers: {
-          "Accept": "application/json",
-        });
-    // var dataUser = convert.jsonDecode(hasil.body);
-    print(hasil.body);
-    if (hasil.statusCode == 200) {
-      print("Judul Berhasil Ditambahkan");
-      return true;
-    } else {
-      print("error status " + hasil.statusCode.toString());
-      print("Login Gagal");
-      return false;
-    }
+
+    var uri = Uri.https('project.mis.pens.ac.id',
+        '/mis112/siapa/mahasiswa/api/content/tambahjudul.php');
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(await http.MultipartFile.fromPath(
+        'DOKUMEN', _files!.first.path.toString()));
+    request.fields['JUDUL'] = judul.text;
+    request.fields['RANGKUMAN'] = rangkuman.text;
+    request.fields['PEMBIMBING1'] = nomordosen1!;
+    request.fields['PEMBIMBING2'] = nomordosen2!;
+    request.fields['PEMBIMBING3'] = nomordosen3!;
+    request.fields['PRIORITAS'] = prioritas.text;
+    request.fields['MAHASISWA'] = nomorQuery;
+    var response = await request.send();
+    final respStr = await response.stream.bytesToString();
+    print(respStr);
+    // request.send().then((response) {
+    //   print(response);
+    // });
+    // http.Response hasil = await http.post(
+    //     Uri.https('project.mis.pens.ac.id',
+    //         '/mis112/siapa/mahasiswa/api/content/tambahjudul.php'),
+    //     body: convert.jsonEncode({
+    //       'JUDUL': judul.text,
+    //       'RANGKUMAN': rangkuman.text,
+    //       'PEMBIMBING1': nomordosen1,
+    //       'PEMBIMBING2': nomordosen2,
+    //       'PEMBIMBING3': nomordosen3,
+    //       'PRIORITAS': prioritas.text,
+    //       'MAHASISWA' : nomorQuery,
+    //     }),
+    //     headers: {
+    //       "Accept": "application/json",
+    //     });
+
+    // print(hasil.body);
+    // if (response.statusCode == 200) {
+    //   print("Judul Berhasil Ditambahkan");
+    //   return true;
+    // } else {
+    //   print("error status " + response.statusCode.toString());
+    //   print("Login Gagal");
+    //   return false;
+    // }
     // } catch (e) {
     //   print("error catchnya $e");
     //   print("error");
@@ -126,6 +164,7 @@ class _TambahJudulState extends State<TambahJudul> {
 
   @override
   Widget build(BuildContext context) {
+    dokumen.value = TextEditingValue(text: "${_files?.first.name}");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -383,8 +422,7 @@ class _TambahJudulState extends State<TambahJudul> {
                             child: TextField(
                               readOnly: true,
                               controller: dokumen,
-                              onTap: () async {
-                              },
+                              onTap: _openFile,
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: false,
@@ -476,6 +514,7 @@ class _TambahJudulState extends State<TambahJudul> {
                                     ),
                                     onPressed: () {
                                       tambahJudul();
+                                      // tambahDokumen();
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(

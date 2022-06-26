@@ -2,10 +2,11 @@ import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:siapa/dosen/penawaranjudul.dart';
+import 'package:siapa/login/pilihlogin.dart';
 import 'package:siapa/mahasiswa/judul.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_session/flutter_session.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -20,80 +21,56 @@ class _LoginState extends State<Login> {
 
   Future _loginMahasiswa() async {
     print(u.text);
-    try {
-      http.Response hasil = await http
-          .post(Uri.https('project.mis.pens.ac.id', '/mis112/siapa/login.php'),
-              body: convert.jsonEncode({
-                'netid': u.text,
-                'password': p.text,
-              }),
-              headers: {
-            "Accept": "application/json",
-          });
-      var dataUser = convert.jsonDecode(hasil.body);
-      if (hasil.statusCode == 200) {
-        if (dataUser['Status'] == 'active') {
-          var dataUser = convert.jsonDecode(hasil.body);
-          print("Login Berhasil");
-          print(dataUser);
-          await FlutterSession().set('nrp', dataUser['NRP']);
-          Navigator.push(context, MaterialPageRoute(builder: (_) => Judul()));
-        } else {
-          print("Bukan Mahasiswa Aktif");
-        }
-        return true;
+    // try {
+    http.Response hasil = await http
+        .post(Uri.https('project.mis.pens.ac.id', '/mis112/siapa/login.php'),
+            body: convert.jsonEncode({
+              'netid': u.text,
+              'password': p.text,
+            }),
+            headers: {
+          "Accept": "application/json",
+        });
+    var dataUser = convert.jsonDecode(hasil.body);
+    if (hasil.statusCode == 200) {
+      if (dataUser['Status'] == 'active') {
+        await SessionManager().set('nrp', dataUser['NRP']);
+        Navigator.push(context, MaterialPageRoute(builder: (_) => Judul()));
+        print("Login Berhasil");
+        print(dataUser["NRP"]);
       } else {
-        print("error status " + hasil.statusCode.toString());
-        return null;
+        print("Bukan Mahasiswa Aktif");
       }
-    } catch (e) {
-      print("error catchnya $e");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
       return null;
     }
-  }
-
-  Future _loginDosen() async {
-    print(u.text);
-    print(p.text);
-    
-    try {
-      http.Response hasil = await http.post(
-          Uri.https('project.mis.pens.ac.id','/mis112/siapa/logindosen.php'),
-          body: convert.jsonEncode({
-            'netid': u.text,
-            'password': p.text,
-          }),
-          headers: {
-            "Accept": "application/json",
-          });
-      print(hasil.body);
-      var dataUser = convert.jsonDecode(hasil.body);
-      if (hasil.statusCode == 200) {
-        if (dataUser['status'] == 'Koordinator') {
-          print("Login Berhasil");
-          Navigator.push(context, MaterialPageRoute(builder: (_) => JudulMahasiswa()));
-        }else if (dataUser['status'] == 'Dosen') {
-          print("Login Berhasil");
-          Navigator.push(context, MaterialPageRoute(builder: (_) => PenawaranJudul()));
-        }
-        else {
-          print("Login Gagal");
-        }
-        return true;
-      } else {
-        print("error status " + hasil.statusCode.toString());
-        return null;
-      }
-    } catch (e) {
-      print("error catchnya $e");
-      return null;
-    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   return null;
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_outlined),
+            color: Color(0xFF578BB8),
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) {
+                return PilihLogin();
+              }));
+            },
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          iconTheme: IconThemeData(color: Color(0xFF578BB8)),
+        ),
         body: ListView(
           children: <Widget>[
             Container(
@@ -101,12 +78,12 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 200, 0, 0),
+                    margin: EdgeInsets.fromLTRB(0, 150, 0, 30),
                     child: Center(
                       child: Text(
-                        "LOGIN",
+                        "LOGIN MAHASISWA",
                         style: TextStyle(
-                            fontSize: 40,
+                            fontSize: 35,
                             fontWeight: FontWeight.bold,
                             fontFamily: "Roboto-Regular"),
                       ),
@@ -171,12 +148,16 @@ class _LoginState extends State<Login> {
                       ),
                       onPressed: () {
                         _loginMahasiswa();
-                        _loginDosen();
+                        // _loginKoordinator();
                       },
                     ),
                   ),
                 ],
               ),
+              //       );
+              //     }
+              //   },
+              // ),
             ),
           ],
         ),

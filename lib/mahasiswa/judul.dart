@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:siapa/login/pilihlogin.dart';
 import 'package:siapa/mahasiswa/juduloranglain.dart';
-import 'package:siapa/login.dart';
+import 'package:siapa/login/login.dart';
 import 'package:siapa/mahasiswa/detailjudul.dart';
 import 'package:siapa/mahasiswa/penawarantopik.dart';
 import 'package:siapa/mahasiswa/tambahjudul.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
-import 'package:flutter_session/flutter_session.dart';
+// import 'package:flutter_session/flutter_session.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class Judul extends StatefulWidget {
   const Judul({Key? key}) : super(key: key);
@@ -22,8 +24,9 @@ class _JudulState extends State<Judul> {
   String? idJudul;
   Future viewJudul() async {
     // try {
-    int nrp = await FlutterSession().get('nrp');
+    int nrp = await SessionManager().get('nrp');
     String nrpQuery = nrp.toString();
+    print(nrpQuery);
     var url = Uri.https('project.mis.pens.ac.id',
         '/mis112/siapa/mahasiswa/api/content/judul.php/', {'nrp': nrpQuery});
     // var response =
@@ -33,6 +36,31 @@ class _JudulState extends State<Judul> {
     var jsonData = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
       // print(jsonData['data']);
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   return null;
+    // }
+  }
+
+  Future getTanggal() async {
+    // try {
+    int nrp = await SessionManager().get('nrp');
+    String nrpQuery = nrp.toString();
+    print(nrpQuery);
+    var url = Uri.https(
+        'project.mis.pens.ac.id',
+        '/mis112/siapa/mahasiswa/api/content/getatanggal.php/',
+        {'nrp': nrpQuery});
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      dynamic jsonData = convert.jsonDecode(response.body);
+      // var nomor = jsonData['data']['NOMOR'];
+      // print(nomor);
+      // await SessionManager().set('NOMOR', jsonData['data']['NOMOR']);
       return jsonData['data'];
     } else {
       print('No Response');
@@ -53,7 +81,8 @@ class _JudulState extends State<Judul> {
       if (response.statusCode == 200) {
         dynamic jsonData = convert.jsonDecode(response.body);
         var nomor = jsonData['data']['NOMOR'];
-        await FlutterSession().set('NOMOR', jsonData['data']['NOMOR']);
+        print(nomor);
+        await SessionManager().set('NOMOR', jsonData['data']['NOMOR']);
         return jsonData['data']['NOMOR'];
       } else {
         print('No Response');
@@ -150,29 +179,29 @@ class _JudulState extends State<Judul> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Text(
+        title: const Text(
           "Judul",
-          style: TextStyle(
+          style: const TextStyle(
               color: Color(0xFF578BB8),
               fontSize: 20,
               fontWeight: FontWeight.bold),
         ),
-        iconTheme: IconThemeData(color: Color(0xFF578BB8)),
+        iconTheme: const IconThemeData(color: const Color(0xFF578BB8)),
       ),
       drawer: Drawer(
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               height: 150,
-              color: Color(0xFF578BB8),
+              color: const Color(0xFF578BB8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Icon(
+                    child: const Icon(
                       Icons.account_circle_outlined,
                       color: Colors.white,
                       size: 55,
@@ -180,14 +209,14 @@ class _JudulState extends State<Judul> {
                   ),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
+                    child: const Text(
                       "Muhammad Fagi",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
+                    child: const Text(
                       "2103191020",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
@@ -195,31 +224,31 @@ class _JudulState extends State<Judul> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return PenawaranTopik();
+                  return const PenawaranTopik();
                 }));
               },
-              leading: Icon(Icons.calendar_today_outlined),
-              title: Text(
+              leading: const Icon(Icons.calendar_today_outlined),
+              title: const Text(
                 "Penawaran Topik",
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
             ),
             ListTile(
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return Judul();
+                  return const Judul();
                 }));
               },
-              leading: Icon(Icons.title),
-              title: Text(
+              leading: const Icon(Icons.title),
+              title: const Text(
                 "Judul Mahasiswa",
                 style: TextStyle(fontSize: 20),
               ),
@@ -231,18 +260,18 @@ class _JudulState extends State<Judul> {
                   onTap: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                      return Login();
+                      return const PilihLogin();
                     }));
                   },
-                  leading: Icon(Icons.logout),
-                  title: Text(
+                  leading: const Icon(Icons.logout),
+                  title: const Text(
                     "Logout",
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             )
           ],
@@ -251,291 +280,335 @@ class _JudulState extends State<Judul> {
       body: ListView(
         children: <Widget>[
           Container(
-            child: Column(
-              children: [
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        width: 141,
-                        height: 36,
-                        margin: EdgeInsets.fromLTRB(26, 0, 26, 0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Color(0xff578BB8)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            )),
+            child: FutureBuilder<dynamic>(
+              future: getTanggal(),
+              builder: (context, snapshot) {
+                if (snapshot.error != null) {
+                  return Text(
+                    "${snapshot.error}",
+                    style: const TextStyle(fontSize: 20),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: const CircularProgressIndicator());
+                } else {
+                  return Container(
+                    child: ("${snapshot.data["TANGGAL_AWAL"]}" != null  && "${snapshot.data["TANGGAL_AKHIR"]}" != null) ?
+                    Column(
+                      children: [
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Container(
+                                width: 141,
+                                height: 36,
+                                margin: const EdgeInsets.fromLTRB(26, 0, 26, 0),
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            const Color(0xff578BB8)),
+                                    shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    )),
+                                  ),
+                                  child: const Text(
+                                    "Judul Anda",
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return const Judul();
+                                    }));
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: 141,
+                                height: 36,
+                                margin: const EdgeInsets.fromLTRB(0, 0, 26, 0),
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            const Color(0xffffffff)),
+                                    shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    )),
+                                  ),
+                                  child: const Text(
+                                    "Judul Orang Lain",
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return const JudulOrangLain();
+                                    }));
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            "Judul Anda",
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600),
-                          ),
-                          onPressed: () {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return Judul();
-                            }));
-                          },
                         ),
-                      ),
-                      Container(
-                        width: 141,
-                        height: 36,
-                        margin: EdgeInsets.fromLTRB(0, 0, 26, 0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Color(0xffffffff)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            )),
-                          ),
-                          child: Text(
-                            "Judul Orang Lain",
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                          onPressed: () {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return JudulOrangLain();
-                            }));
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                FutureBuilder<dynamic>(
-                  future: viewJudul(),
-                  builder: (context, snapshot) {
-                    if (snapshot.error != null) {
-                      return Text(
-                        "${snapshot.error}",
-                        style: TextStyle(fontSize: 20),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      return Container(
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(), // new
-                          controller: _controller,
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (BuildContext context, index) {
-                            return Container(
-                              child: Card(
-                                margin: EdgeInsets.fromLTRB(26, 14, 26, 0),
-                                child: Container(
-                                  width: MediaQueryWidth * 0.867,
-                                  constraints: BoxConstraints(
-                                      maxHeight: double.infinity),
-                                  child: SizedBox(
-                                    child: Container(
-                                      margin: EdgeInsets.all(20),
-                                      constraints: BoxConstraints(
-                                          maxHeight: double.infinity),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Container(
-                                                width: 239,
-                                                child: Text(
-                                                  "${snapshot.data[index]["JUDUL"]}",
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      letterSpacing: 1),
-                                                ),
-                                              ),
-                                              Container(
-                                                child: SizedBox(
-                                                  width: 27,
-                                                  height: 27,
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                      border: Border.all(
-                                                        color:
-                                                            Color(0xFF578BB8),
-                                                        width: 1.0,
-                                                      ),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        "1",
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            letterSpacing: 1),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Container(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Container(
-                                                  width: 80,
-                                                  height: 23,
-                                                  child:
-                                                      ("${snapshot.data[index]["STATUS"]}" == '1')
-                                                          ? (("${snapshot.data[index]["AMBIL"]}" == '1') ? Text("Diambil",
-                                                              style: TextStyle(
+                        
+                        Text(
+                            "Tanggal Pengajuan Judul : ${snapshot.data["TANGGAL_AWAL"]} s/d ${snapshot.data["TANGGAL_AKHIR"]}"),
+                        // ignore: dead_code, unnecessary_null_comparison
+                        // ("${snapshot.data["TANGGAL_AWAL"]}" == true) ?
+                        FutureBuilder<dynamic>(
+                          future: viewJudul(),
+                          builder: (context, snapshot) {
+                            if (snapshot.error != null) {
+                              return Text(
+                                "${snapshot.error}",
+                                style: const TextStyle(fontSize: 20),
+                              );
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: const CircularProgressIndicator());
+                            } else {
+                              return Container(
+                                child: ListView.builder(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(), // new
+                                  controller: _controller,
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder: (BuildContext context, index) {
+                                    return Container(
+                                      child: Card(
+                                        margin: const EdgeInsets.fromLTRB(
+                                            26, 14, 26, 0),
+                                        child: Container(
+                                          width: MediaQueryWidth * 0.867,
+                                          constraints: const BoxConstraints(
+                                              maxHeight: double.infinity),
+                                          child: SizedBox(
+                                            child: Container(
+                                              margin: const EdgeInsets.all(20),
+                                              constraints: const BoxConstraints(
+                                                  maxHeight: double.infinity),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: <Widget>[
+                                                      Container(
+                                                        width: 239,
+                                                        child: Text(
+                                                          "${snapshot.data[index]["JUDUL"]}",
+                                                          style:
+                                                              const TextStyle(
                                                                   fontSize: 14,
-                                                                  color: Color(
-                                                                      0xff20B726))
-                                                            ) : ("${snapshot.data[index]["AMBIL"]}" =='2') ? Text("Tidak Diambil",
-                                                              style: TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Color(
-                                                                      0xff20B726))) :  ElevatedButton(
-                                                              style:
-                                                                  ButtonStyle(
-                                                                backgroundColor:
-                                                                    MaterialStateProperty.all<
-                                                                            Color>(
-                                                                        Color(
-                                                                            0xffc4c4c4)),
-                                                                shape: MaterialStateProperty.all<
-                                                                        RoundedRectangleBorder>(
-                                                                    RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              5),
-                                                                )),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  letterSpacing:
+                                                                      1),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: SizedBox(
+                                                          width: 27,
+                                                          height: 27,
+                                                          child: Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                              border:
+                                                                  Border.all(
+                                                                color: const Color(
+                                                                    0xFF578BB8),
+                                                                width: 1.0,
                                                               ),
+                                                            ),
+                                                            child: const Center(
                                                               child: Text(
-                                                                "Ambil",
+                                                                "1",
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         12,
-                                                                    color: Colors
-                                                                        .black),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    letterSpacing:
+                                                                        1),
                                                               ),
-                                                              onPressed: () {
-                                                                showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder: (BuildContext
-                                                                          context) =>
-                                                                      _buildPopupAmbilJudul(
-                                                                          context),
-                                                                );
-                                                              },
-                                                            ))
-                                                          : Text(
-                                                              ("${snapshot.data[index]["STATUS"]}" ==
-                                                                      '2')
-                                                                  ? "Ditolak"
-                                                                  : "Belum Diset",
-                                                              style: TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Color(
-                                                                      0xff20B726)),
                                                             ),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          deleteJudul(snapshot
-                                                                  .data[index]
-                                                              ["NOMOR"]);
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (_) =>
-                                                                      Judul()));
-                                                        },
-                                                        icon: Icon(Icons
-                                                            .delete_outline),
-                                                        color:
-                                                            Color(0xFF578BB8),
+                                                          ),
+                                                        ),
                                                       ),
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Container(
+                                                          width: 80,
+                                                          height: 23,
+                                                          child: ("${snapshot.data[index]["STATUS"]}" ==
+                                                                  '1')
+                                                              ? (("${snapshot.data[index]["AMBIL"]}" ==
+                                                                      '1')
+                                                                  ? const Text(
+                                                                      "Diambil",
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          color: const Color(
+                                                                              0xff20B726)))
+                                                                  : ("${snapshot.data[index]["AMBIL"]}" ==
+                                                                          '2')
+                                                                      ? const Text(
+                                                                          "Tidak Diambil",
+                                                                          style: const TextStyle(
+                                                                              fontSize: 14,
+                                                                              color: Color(0xff20B726)))
+                                                                      : ElevatedButton(
+                                                                          style:
+                                                                              ButtonStyle(
+                                                                            backgroundColor:
+                                                                                MaterialStateProperty.all<Color>(const Color(0xffc4c4c4)),
+                                                                            shape:
+                                                                                MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(5),
+                                                                            )),
+                                                                          ),
+                                                                          child:
+                                                                              const Text(
+                                                                            "Ambil",
+                                                                            style:
+                                                                                const TextStyle(fontSize: 12, color: Colors.black),
+                                                                          ),
+                                                                          onPressed:
+                                                                              () {
+                                                                            showDialog(
+                                                                              context: context,
+                                                                              builder: (BuildContext context) => _buildPopupAmbilJudul(context),
+                                                                            );
+                                                                          },
+                                                                        ))
+                                                              : Text(
+                                                                  ("${snapshot.data[index]["STATUS"]}" ==
+                                                                          '2')
+                                                                      ? "Ditolak"
+                                                                      : "Belum Diset",
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Color(
+                                                                          0xff20B726)),
+                                                                ),
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              child: IconButton(
+                                                                onPressed: () {
+                                                                  deleteJudul(snapshot
+                                                                              .data[
+                                                                          index]
+                                                                      [
+                                                                      "NOMOR"]);
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (_) =>
+                                                                              const Judul()));
+                                                                },
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .delete_outline),
+                                                                color: const Color(
+                                                                    0xFF578BB8),
+                                                              ),
+                                                            ),
+                                                            IconButton(
+                                                              onPressed: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) {
+                                                                  return DetailJudul(
+                                                                      nomor:
+                                                                          "${snapshot.data[index]["NOMOR"]}");
+                                                                }));
+                                                              },
+                                                              icon: const Icon(Icons
+                                                                  .arrow_forward_ios_outlined),
+                                                              color: const Color(
+                                                                  0xFF578BB8),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
                                                     ),
-                                                    IconButton(
-                                                      onPressed: () {
-                                                        Navigator.push(context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                          return DetailJudul(
-                                                              nomor:
-                                                                  "${snapshot.data[index]["NOMOR"]}");
-                                                        }));
-                                                      },
-                                                      icon: Icon(Icons
-                                                          .arrow_forward_ios_outlined),
-                                                      color: Color(0xFF578BB8),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           },
                         ),
-                      );
-                    }
-                  },
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Color(0xff578BB8)),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    )),
-                  ),
-                  child: Icon(
-                    Icons.add_outlined,
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
-                      return TambahJudul();
-                    }));
-                  },
-                ),
-              ],
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color(0xff578BB8)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            )),
+                          ),
+                          child: const Icon(
+                            Icons.add_outlined,
+                          ),
+                          onPressed: () {
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const TambahJudul();
+                            }));
+                          },
+                        )
+                      ],
+                    ) : 
+                    Text("Tes")
+                  );
+                }
+              },
             ),
           ),
         ],
@@ -608,11 +681,11 @@ class _JudulState extends State<Judul> {
           if (snapshot.error != null) {
             return Text(
               "${snapshot.error}",
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: const CircularProgressIndicator());
           } else {
             return Container(
               child: ListView.builder(
@@ -637,9 +710,9 @@ class _JudulState extends State<Judul> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Container(
-                            margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                            margin: const EdgeInsets.fromLTRB(0, 5, 0, 6),
                             alignment: Alignment.centerLeft,
-                            child: Text(
+                            child: const Text(
                               "Tahun Ajaran",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w200),
@@ -654,8 +727,8 @@ class _JudulState extends State<Judul> {
                                 fillColor: Colors.white,
                                 filled: false,
                                 hintText: "Masukkan Tahun Ajaran",
-                                hintStyle:
-                                    TextStyle(fontSize: 12, letterSpacing: 0.5),
+                                hintStyle: const TextStyle(
+                                    fontSize: 12, letterSpacing: 0.5),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5)),
                               ),
@@ -674,7 +747,8 @@ class _JudulState extends State<Judul> {
                                   Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Color(0xffEF0000), // background
+                                  primary:
+                                      const Color(0xffEF0000), // background
                                   onPrimary: Colors.white, // foreground
                                 ),
                                 child: const Text('Batal'),
@@ -689,10 +763,11 @@ class _JudulState extends State<Judul> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) => Judul()));
+                                          builder: (_) => const Judul()));
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Color(0xff20B726), // background
+                                  primary:
+                                      const Color(0xff20B726), // background
                                   onPrimary: Colors.white, // foreground
                                 ),
                                 child: const Text('Simpan'),

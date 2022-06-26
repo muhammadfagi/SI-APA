@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:siapa/mahasiswa/judul.dart';
-import 'package:siapa/login.dart';
+import 'package:siapa/login/login.dart';
 import 'package:siapa/mahasiswa/penawarantopik.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
-import 'package:flutter_session/flutter_session.dart';
+// import 'package:flutter_session/flutter_session.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class JudulOrangLain extends StatefulWidget {
   const JudulOrangLain({Key? key}) : super(key: key);
@@ -16,12 +17,11 @@ class JudulOrangLain extends StatefulWidget {
 
 Future viewJudulOrangLain() async {
   // try {
-  int nrp = await FlutterSession().get('nrp');
+  int nrp = await SessionManager().get('nrp');
   String nrpQuery = nrp.toString();
   var url = Uri.https(
       'project.mis.pens.ac.id',
-      '/mis112/siapa/mahasiswa/api/content/juduloranglain.php/',
-      {'nrp': nrpQuery});
+      '/mis112/siapa/mahasiswa/api/content/juduloranglain.php/', {'nrp' : nrpQuery});
 
   var response = await http.get(url);
   var jsonData = convert.jsonDecode(response.body);
