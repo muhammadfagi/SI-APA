@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -10,6 +12,8 @@ import '../models/namadosen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:path/path.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+// import '../controller/tambahdokumen.dart';
 
 class TambahJudul extends StatefulWidget {
   const TambahJudul({Key? key}) : super(key: key);
@@ -99,10 +103,17 @@ class _TambahJudulState extends State<TambahJudul> {
 
   List<PlatformFile>? _files;
 
-  void _openFile() async {
+  Future _openFile() async {
     _files = (await FilePicker.platform
             .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']))!
         .files;
+  }
+
+  Future uploadFile() async {
+    final path = '${_files!.first.name}';
+    final file = File(_files!.first.path!);
+
+    final ref = FirebaseStorage.instance.ref().putFile(file);
   }
 
   Future tambahJudul() async {
@@ -127,34 +138,6 @@ class _TambahJudulState extends State<TambahJudul> {
     var response = await request.send();
     final respStr = await response.stream.bytesToString();
     print(respStr);
-    // request.send().then((response) {
-    //   print(response);
-    // });
-    // http.Response hasil = await http.post(
-    //     Uri.https('project.mis.pens.ac.id',
-    //         '/mis112/siapa/mahasiswa/api/content/tambahjudul.php'),
-    //     body: convert.jsonEncode({
-    //       'JUDUL': judul.text,
-    //       'RANGKUMAN': rangkuman.text,
-    //       'PEMBIMBING1': nomordosen1,
-    //       'PEMBIMBING2': nomordosen2,
-    //       'PEMBIMBING3': nomordosen3,
-    //       'PRIORITAS': prioritas.text,
-    //       'MAHASISWA' : nomorQuery,
-    //     }),
-    //     headers: {
-    //       "Accept": "application/json",
-    //     });
-
-    // print(hasil.body);
-    // if (response.statusCode == 200) {
-    //   print("Judul Berhasil Ditambahkan");
-    //   return true;
-    // } else {
-    //   print("error status " + response.statusCode.toString());
-    //   print("Login Gagal");
-    //   return false;
-    // }
     // } catch (e) {
     //   print("error catchnya $e");
     //   print("error");
@@ -422,7 +405,11 @@ class _TambahJudulState extends State<TambahJudul> {
                             child: TextField(
                               readOnly: true,
                               controller: dokumen,
-                              onTap: _openFile,
+                              onTap: () {
+                                _openFile();
+                                // controller.openfile()
+
+                              },
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: false,

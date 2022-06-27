@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "822614294281",
+    "project_id": "si-apa-9bcdf",
+    "storage_bucket": "si-apa-9bcdf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822614294281:android:81ec15151a7ab9b2d41dd8",
+        "android_client_info": {
+          "package_name": "com.example.siapa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822614294281-edor0o8ipd1umipn0h4ur0sj7e8tce36.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1yalPdVWtzruP2dVG9Tgiw5NZvNJ8yU0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822614294281-edor0o8ipd1umipn0h4ur0sj7e8tce36.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

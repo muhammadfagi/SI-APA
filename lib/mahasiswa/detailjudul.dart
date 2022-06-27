@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:siapa/mahasiswa/detailjudul.dart';
@@ -9,7 +10,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
 import '../models/namadosen.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
 
 class DetailJudul extends StatefulWidget {
   final String nomor;
@@ -125,13 +130,57 @@ class _DetailJudulState extends State<DetailJudul> {
     }
   }
 
-  void openFile({bool forceWebView = false, bool enableJavascript = true}) async {
-    final url = Uri.https(
-        'project.mis.pens.ac.id', '/mis112/contents/fileberkas/81.pdf');
+  final ReceivePort _port = ReceivePort();
 
-    // try {
-      await launchUrl(url);
-    // } catch (e) {}
+  @override
+  void initState() {
+    super.initState();
+
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+      setState(() {});
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
+    send.send([id, status, progress]);
+  }
+
+  Future openfile(String url) async {
+    var status = await Permission.storage.request();
+    if (status.isGranted) {
+      final baseStorage = await getExternalStorageDirectory();
+
+      await FlutterDownloader.enqueue(
+        url: url,
+        savedDir: baseStorage!.path,
+        showNotification:
+            true, // show download progress in status bar (for Android)
+        openFileFromNotification:
+            true, // click on notification to open downloaded file (for Android)
+      );
+    }
+  }
+
+  Future opendokumen() async {
+    final Uri url = Uri.parse(
+        'https://project.mis.pens.ac.id/mis112/contents/fileberkas/80.pdf');
+    await launchUrl(url);
   }
 
   @override
@@ -715,27 +764,31 @@ class _DetailJudulState extends State<DetailJudul> {
                                               margin: EdgeInsets.fromLTRB(
                                                   0, 4, 0, 0),
                                               child: ElevatedButton(
-                                                style: ButtonStyle(
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          Color(0xffc4c4c4)),
-                                                  shape: MaterialStateProperty
-                                                      .all<RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  )),
-                                                ),
-                                                child: Text(
-                                                  "Open File",
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.black),
-                                                ),
-                                                onPressed: openFile,
-                                              ),
+                                                  style: ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(Color(
+                                                                0xffc4c4c4)),
+                                                    shape: MaterialStateProperty
+                                                        .all<RoundedRectangleBorder>(
+                                                            RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    )),
+                                                  ),
+                                                  child: Text(
+                                                    "Open File",
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.black),
+                                                  ),
+                                                  onPressed: () {
+                                                    opendokumen();
+                                                  }
+                                                  // => openfile(
+                                                  //     'https://project.mis.pens.ac.id/mis112/contents/fileberkas/80.pdf')
+                                                  ),
                                             ),
                                           ),
                                           Text("${snapshot.data["NOMOR"]}.pdf"),
@@ -748,7 +801,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) =>
-                                              _buildPopupCatatan(context),
+                                              _buildPopupFile(context),
                                         );
                                       },
                                       icon: Icon(Icons.edit_outlined),
@@ -1395,6 +1448,139 @@ class _DetailJudulState extends State<DetailJudul> {
                         child: new ElevatedButton(
                           onPressed: () {
                             updateRangkuman();
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) => Judul()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff20B726), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Simpan'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  // pop up catatan
+  List<PlatformFile>? _files;
+
+  void _openFile() async {
+    _files = (await FilePicker.platform
+            .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']))!
+        .files;
+  }
+
+  Future updateFile() async {
+    // try {
+    String nmr = widget.nomor;
+
+    var uri = Uri.https(
+        'project.mis.pens.ac.id',
+        '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
+        {'function': 'editDokumen'});
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(await http.MultipartFile.fromPath(
+        'DOKUMEN', _files!.first.path.toString()));
+    request.fields['MAHASISWA'] = nmr;
+    var response = await request.send();
+    final respStr = await response.stream.bytesToString();
+    print(respStr);
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  // TextEditingController catatan = new TextEditingController();
+  Widget _buildPopupFile(BuildContext context) {
+    return Container(
+      child: FutureBuilder<dynamic>(
+        future: updateCatatan(),
+        builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return Text(
+              "${snapshot.error}",
+              style: TextStyle(fontSize: 20),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            catatan.value = TextEditingValue(text: "tes");
+            return Container(
+              child: new AlertDialog(
+                title: const Text(
+                  'Edit Catatan',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5),
+                  textAlign: TextAlign.center,
+                ),
+                content: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Catatan",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w200),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 340,
+                      height: 40,
+                      child: TextField(
+                        // controller: catatan,
+                        readOnly: true,
+                        onTap: _openFile,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: false,
+                          hintText: "Pilih Dokumen",
+                          hintStyle:
+                              TextStyle(fontSize: 12, letterSpacing: 0.5),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xffEF0000), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Batal'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                            updateFile();
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (_) => Judul()));
                           },
