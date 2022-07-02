@@ -669,15 +669,30 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
                                             margin:
                                                 EdgeInsets.fromLTRB(0, 4, 0, 0),
                                             alignment: Alignment.topLeft,
-                                            child: Text(
+                                            child: snapshot.data["CATATAN"] != null ? Text(
                                               "${snapshot.data["CATATAN"]}",
                                               style: TextStyle(fontSize: 14),
                                               maxLines: 6,
                                               overflow: TextOverflow.ellipsis,
-                                            ),
+                                            ) : Text("Belum Ada Catatan", style: TextStyle(fontSize: 14),
+                                              maxLines: 6,
+                                              overflow: TextOverflow.ellipsis,)
                                           )
                                         ],
                                       ),
+                                    ),
+                                    IconButton(
+                                      alignment: Alignment.topRight,
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              _buildPopupCatatan(context),
+                                        );
+                                      },
+                                      icon: Icon(Icons.edit_outlined),
+                                      color: Color(0xFF578BB8),
+                                      iconSize: 30.0,
                                     ),
                                   ],
                                 ),
@@ -1139,6 +1154,143 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
           ],
         ),
       ],
+    );
+  }
+
+  Future updateCatatan() async {
+    // try {
+
+    String nmr = widget.nomor;
+    // String nmrQuery = nmr.toString();
+    print(nmr);
+    // print(judul.text);
+    http.Response hasil = await http.post(
+        Uri.https(
+            'project.mis.pens.ac.id',
+            '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
+            {'function': 'editCatatan'}),
+        body: convert.jsonEncode({
+          'NOMOR': nmr,
+          'CATATAN': catatan.text,
+        }),
+        headers: {
+          "Accept": "application/json",
+        });
+    // var dataUser = convert.jsonDecode(hasil.body);
+    print(hasil.body);
+    // print(hasil.statusCode);
+    if (hasil.statusCode == 200) {
+      print("Judul Berhasil Diedit");
+      return true;
+    } else {
+      print("error status " + hasil.statusCode.toString());
+      print("Login Gagal");
+      return false;
+    }
+    // } catch (e) {
+    //   print("error catchnya $e");
+    //   print("error");
+    //   return null;
+    // }
+  }
+
+  TextEditingController catatan = new TextEditingController();
+  Widget _buildPopupCatatan(BuildContext context) {
+    return Container(
+      child: FutureBuilder<dynamic>(
+        future: updateCatatan(),
+        builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return Text(
+              "${snapshot.error}",
+              style: TextStyle(fontSize: 20),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            catatan.value = TextEditingValue(text: "tes");
+            return Container(
+              child: new AlertDialog(
+                title: const Text(
+                  'Edit Catatan',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5),
+                  textAlign: TextAlign.center,
+                ),
+                content: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Catatan",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w200),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 340,
+                      height: 40,
+                      child: TextField(
+                        controller: catatan,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: false,
+                          hintText: "Masukkan Catatan",
+                          hintStyle:
+                              TextStyle(fontSize: 12, letterSpacing: 0.5),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xffEF0000), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Batal'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 110,
+                        child: new ElevatedButton(
+                          onPressed: () {
+                            updateCatatan();
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (_) => JudulMahasiswa()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff20B726), // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          child: const Text('Simpan'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

@@ -178,9 +178,15 @@ class _DetailJudulState extends State<DetailJudul> {
   }
 
   Future opendokumen() async {
-    final Uri url = Uri.parse(
-        'https://project.mis.pens.ac.id/mis112/contents/fileberkas/80.pdf');
-    await launchUrl(url);
+    String nmr = widget.nomor;
+    print(nmr);
+    final url =  'https://project.mis.pens.ac.id/mis112/contents/fileberkas/' + nmr + ".pdf";
+    if(await canLaunch(url)){
+        await launch(url);
+      }else {
+        throw 'Could not launch $url';
+      }
+    // OpenFile.open("project.mis.pens.ac.id/mis112/contents/fileberkas/80.pdf");
   }
 
   @override
@@ -656,79 +662,79 @@ class _DetailJudulState extends State<DetailJudul> {
                                   ),
                                 ),
                               ),
-                              // Catatan
-                              Container(
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      child: Icon(
-                                        Icons.notes_outlined,
-                                        color: Color(0xFF578BB8),
-                                        size: 30.0,
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                                      width: 250.7,
-                                      child: Column(
-                                        children: <Widget>[
-                                          Container(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "Catatan",
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w100,
-                                                  color: Colors.black
-                                                      .withOpacity(0.6)),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin:
-                                                EdgeInsets.fromLTRB(0, 4, 0, 0),
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "${snapshot.data["CATATAN"]}",
-                                              style: TextStyle(fontSize: 14),
-                                              maxLines: 6,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    IconButton(
-                                      alignment: Alignment.topRight,
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              _buildPopupCatatan(context),
-                                        );
-                                      },
-                                      icon: Icon(Icons.edit_outlined),
-                                      color: Color(0xFF578BB8),
-                                      iconSize: 30.0,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Container(
-                                    width: 298,
-                                    margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color:
-                                            Color(0xff578BB8).withOpacity(0.05),
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // // Catatan
+                              // Container(
+                              //   child: Row(
+                              //     children: <Widget>[
+                              //       Container(
+                              //         child: Icon(
+                              //           Icons.notes_outlined,
+                              //           color: Color(0xFF578BB8),
+                              //           size: 30.0,
+                              //         ),
+                              //       ),
+                              //       Container(
+                              //         margin: EdgeInsets.fromLTRB(12, 0, 0, 0),
+                              //         width: 250.7,
+                              //         child: Column(
+                              //           children: <Widget>[
+                              //             Container(
+                              //               alignment: Alignment.topLeft,
+                              //               child: Text(
+                              //                 "Catatan",
+                              //                 style: TextStyle(
+                              //                     fontSize: 14,
+                              //                     fontWeight: FontWeight.w100,
+                              //                     color: Colors.black
+                              //                         .withOpacity(0.6)),
+                              //               ),
+                              //             ),
+                              //             Container(
+                              //               margin:
+                              //                   EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              //               alignment: Alignment.topLeft,
+                              //               child: Text(
+                              //                 "${snapshot.data["CATATAN"]}",
+                              //                 style: TextStyle(fontSize: 14),
+                              //                 maxLines: 6,
+                              //                 overflow: TextOverflow.ellipsis,
+                              //               ),
+                              //             )
+                              //           ],
+                              //         ),
+                              //       ),
+                              //       IconButton(
+                              //         alignment: Alignment.topRight,
+                              //         onPressed: () {
+                              //           showDialog(
+                              //             context: context,
+                              //             builder: (BuildContext context) =>
+                              //                 _buildPopupCatatan(context),
+                              //           );
+                              //         },
+                              //         icon: Icon(Icons.edit_outlined),
+                              //         color: Color(0xFF578BB8),
+                              //         iconSize: 30.0,
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
+                              // Container(
+                              //   child: Align(
+                              //     alignment: Alignment.topRight,
+                              //     child: Container(
+                              //       width: 298,
+                              //       margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                              //       decoration: BoxDecoration(
+                              //         border: Border.all(
+                              //           color:
+                              //               Color(0xff578BB8).withOpacity(0.05),
+                              //           width: 1.0,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                               // File
                               Container(
                                 child: Row(
@@ -786,8 +792,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                   onPressed: () {
                                                     opendokumen();
                                                   }
-                                                  // => openfile(
-                                                  //     'https://project.mis.pens.ac.id/mis112/contents/fileberkas/80.pdf')
+                                                  
                                                   ),
                                             ),
                                           ),

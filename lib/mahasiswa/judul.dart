@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:siapa/login/pilihlogin.dart';
 import 'package:siapa/mahasiswa/juduloranglain.dart';
 import 'package:siapa/login/login.dart';
@@ -8,7 +11,6 @@ import 'package:siapa/mahasiswa/tambahjudul.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
-// import 'package:flutter_session/flutter_session.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class Judul extends StatefulWidget {
@@ -300,315 +302,588 @@ class _JudulState extends State<Judul> {
                       shrinkWrap: true,
                       itemCount: 1,
                       itemBuilder: (BuildContext context, index) {
+                        final now = DateTime.now();
+                        var tanggalawal =
+                            "${snapshot.data[index]["TANGGAL_AWAL"]}";
+                        var tanggalakhir =
+                            "${snapshot.data[index]["TANGGAL_AKHIR"]}";
+                        final tanggalawalset =
+                            DateFormat('d-MM-yy').parse(tanggalawal);
+                        final tanggalakhirset =
+                            DateFormat('d-MM-yy').parse(tanggalakhir);
+
                         return Container(
                             child: ("${snapshot.data[index]["TANGGAL_AWAL"]}" !=
                                         null &&
-                                    "${snapshot.data[index]["TANGGAL_AKHIR"]}" != null)
-                                ? Column(
-                                    children: [
-                                      Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Container(
-                                              width: 141,
-                                              height: 36,
-                                              margin: const EdgeInsets.fromLTRB(
-                                                  26, 0, 26, 0),
-                                              child: ElevatedButton(
-                                                style: ButtonStyle(
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          const Color(
-                                                              0xff578BB8)),
-                                                  shape: MaterialStateProperty
-                                                      .all<RoundedRectangleBorder>(
+                                    "${snapshot.data[index]["TANGGAL_AKHIR"]}" !=
+                                        null)
+                                ? (now.isAfter(tanggalawalset) &&
+                                        now.isBefore(tanggalakhirset))
+                                    ? Column(
+                                        children: [
+                                          Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: <Widget>[
+                                                Container(
+                                                  width: 141,
+                                                  height: 36,
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          26, 0, 26, 0),
+                                                  child: ElevatedButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all<
+                                                                      Color>(
+                                                                  const Color(
+                                                                      0xff578BB8)),
+                                                      shape: MaterialStateProperty.all<
+                                                              RoundedRectangleBorder>(
                                                           RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  )),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      )),
+                                                    ),
+                                                    child: const Text(
+                                                      "Judul Anda",
+                                                      style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) {
+                                                        return const Judul();
+                                                      }));
+                                                    },
+                                                  ),
                                                 ),
-                                                child: const Text(
-                                                  "Judul Anda",
-                                                  style: const TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.pushReplacement(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) {
-                                                    return const Judul();
-                                                  }));
-                                                },
-                                              ),
-                                            ),
-                                            Container(
-                                              width: 141,
-                                              height: 36,
-                                              margin: const EdgeInsets.fromLTRB(
-                                                  0, 0, 26, 0),
-                                              child: ElevatedButton(
-                                                style: ButtonStyle(
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          const Color(
-                                                              0xffffffff)),
-                                                  shape: MaterialStateProperty
-                                                      .all<RoundedRectangleBorder>(
+                                                Container(
+                                                  width: 141,
+                                                  height: 36,
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 26, 0),
+                                                  child: ElevatedButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all<
+                                                                      Color>(
+                                                                  const Color(
+                                                                      0xffffffff)),
+                                                      shape: MaterialStateProperty.all<
+                                                              RoundedRectangleBorder>(
                                                           RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  )),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      )),
+                                                    ),
+                                                    child: const Text(
+                                                      "Judul Orang Lain",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Colors.black),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) {
+                                                        return const JudulOrangLain();
+                                                      }));
+                                                    },
+                                                  ),
                                                 ),
-                                                child: const Text(
-                                                  "Judul Orang Lain",
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.black),
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.pushReplacement(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) {
-                                                    return const JudulOrangLain();
-                                                  }));
-                                                },
-                                              ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
+                                          ),
 
-                                      Text(
-                                          "Tanggal Pengajuan Judul : ${snapshot.data[index]["TANGGAL_AWAL"]} s/d ${snapshot.data[index]["TANGGAL_AKHIR"]}"),
-                                      // ignore: dead_code, unnecessary_null_comparison
-                                      // ("${snapshot.data["TANGGAL_AWAL"]}" == true) ?
-                                      FutureBuilder<dynamic>(
-                                        future: viewJudul(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.error != null) {
-                                            return Text(
-                                              "${snapshot.error}",
-                                              style:
-                                                  const TextStyle(fontSize: 20),
-                                            );
-                                          }
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const Center(
-                                                child:
-                                                    const CircularProgressIndicator());
-                                          } else {
-                                            return Container(
-                                              child: ListView.builder(
-                                                physics:
-                                                    const AlwaysScrollableScrollPhysics(), // new
-                                                controller: _controller,
-                                                scrollDirection: Axis.vertical,
-                                                shrinkWrap: true,
-                                                itemCount: snapshot.data.length,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        index) {
-                                                  return Container(
-                                                    child: Card(
-                                                      margin: const EdgeInsets
-                                                              .fromLTRB(
-                                                          26, 14, 26, 0),
-                                                      child: Container(
-                                                        width: MediaQueryWidth *
-                                                            0.867,
-                                                        constraints:
-                                                            const BoxConstraints(
-                                                                maxHeight: double
-                                                                    .infinity),
-                                                        child: SizedBox(
+                                          Text(
+                                              "Tanggal Pengajuan Judul : ${snapshot.data[index]["TANGGAL_AWAL"]} s/d ${snapshot.data[index]["TANGGAL_AKHIR"]}"),
+                                          // ignore: dead_code, unnecessary_null_comparison
+                                          // ("${snapshot.data["TANGGAL_AWAL"]}" == true) ?
+                                          FutureBuilder<dynamic>(
+                                            future: viewJudul(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.error != null) {
+                                                return Text(
+                                                  "${snapshot.error}",
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                );
+                                              }
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                    child:
+                                                        const CircularProgressIndicator());
+                                              } else {
+                                                return Container(
+                                                  child: ListView.builder(
+                                                    physics:
+                                                        const AlwaysScrollableScrollPhysics(), // new
+                                                    controller: _controller,
+                                                    scrollDirection:
+                                                        Axis.vertical,
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        snapshot.data.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            index) {
+                                                      return Container(
+                                                        child: Card(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  26,
+                                                                  14,
+                                                                  26,
+                                                                  0),
                                                           child: Container(
-                                                            margin:
-                                                                const EdgeInsets
-                                                                    .all(20),
+                                                            width:
+                                                                MediaQueryWidth *
+                                                                    0.867,
                                                             constraints:
                                                                 const BoxConstraints(
-                                                                    maxHeight: 
+                                                                    maxHeight:
                                                                         double
                                                                             .infinity),
-                                                            child: Column(
-                                                              children: [
-                                                                Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: <
-                                                                      Widget>[
-                                                                    Container(
-                                                                      width:
-                                                                          239,
-                                                                      child:
-                                                                          Text(
-                                                                        "${snapshot.data[index]["JUDUL"]}",
-                                                                        style: const TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            letterSpacing: 1),
-                                                                      ),
-                                                                    ),
-                                                                    Container(
-                                                                      child:
-                                                                          SizedBox(
-                                                                        width:
-                                                                            27,
-                                                                        height:
-                                                                            27,
-                                                                        child:
-                                                                            Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(20),
-                                                                            border:
-                                                                                Border.all(
-                                                                              color: const Color(0xFF578BB8),
-                                                                              width: 1.0,
-                                                                            ),
-                                                                          ),
+                                                            child: SizedBox(
+                                                              child: Container(
+                                                                margin:
+                                                                    const EdgeInsets
+                                                                        .all(20),
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                        maxHeight:
+                                                                            double.infinity),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Container(
+                                                                          width:
+                                                                              239,
                                                                           child:
-                                                                              const Center(
+                                                                              Text(
+                                                                            "${snapshot.data[index]["JUDUL"]}",
+                                                                            style: const TextStyle(
+                                                                                fontSize: 14,
+                                                                                fontWeight: FontWeight.w600,
+                                                                                letterSpacing: 1),
+                                                                          ),
+                                                                        ),
+                                                                        Container(
+                                                                          child:
+                                                                              SizedBox(
+                                                                            width:
+                                                                                27,
+                                                                            height:
+                                                                                27,
                                                                             child:
-                                                                                Text(
-                                                                              "1",
-                                                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1),
+                                                                                Container(
+                                                                              decoration: BoxDecoration(
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                                border: Border.all(
+                                                                                  color: const Color(0xFF578BB8),
+                                                                                  width: 1.0,
+                                                                                ),
+                                                                              ),
+                                                                              child: const Center(
+                                                                                child: Text(
+                                                                                  "1",
+                                                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1),
+                                                                                ),
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                         ),
+                                                                      ],
+                                                                    ),
+                                                                    Container(
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Container(
+                                                                            width:
+                                                                                130,
+                                                                            height:
+                                                                                23,
+                                                                            child:
+                                                                                ("${snapshot.data[index]["STATUS"]}" == '1')
+                                                                                ? (("${snapshot.data[index]["AMBIL"]}" == '1')
+                                                                                    ? const Text("Diambil", style: const TextStyle(fontSize: 14, color: const Color(0xff20B726)))
+                                                                                    : ("${snapshot.data[index]["AMBIL"]}" == '2')
+                                                                                        ? const Text("Tidak Diambil", style: const TextStyle(fontSize: 14, color: Color(0xff20B726)))
+                                                                                        : const Text("Diterima Belum Diambil", style: const TextStyle(fontSize: 14, color: const Color(0xff20B726))))
+                                                                                : Text(
+                                                                                    ("${snapshot.data[index]["STATUS"]}" == '2') ? "Ditolak" : "Belum Diset",
+                                                                                    style: const TextStyle(fontSize: 14, color: Color(0xff20B726)),
+                                                                                  ),
+                                                                          ),
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: <Widget>[
+                                                                              Container(
+                                                                                child: IconButton(
+                                                                                  onPressed: () {
+                                                                                    deleteJudul(snapshot.data[index]["NOMOR"]);
+                                                                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
+                                                                                  },
+                                                                                  icon: const Icon(Icons.delete_outline),
+                                                                                  color: const Color(0xFF578BB8),
+                                                                                ),
+                                                                              ),
+                                                                              IconButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                                                    return DetailJudul(nomor: "${snapshot.data[index]["NOMOR"]}");
+                                                                                  }));
+                                                                                },
+                                                                                icon: const Icon(Icons.arrow_forward_ios_outlined),
+                                                                                color: const Color(0xFF578BB8),
+                                                                              ),
+                                                                            ],
+                                                                          )
+                                                                        ],
                                                                       ),
                                                                     ),
                                                                   ],
                                                                 ),
-                                                                Container(
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    children: [
-                                                                      Container(
-                                                                        width:
-                                                                            80,
-                                                                        height:
-                                                                            23,
-                                                                        child: ("${snapshot.data[index]["STATUS"]}" ==
-                                                                                '1')
-                                                                            ? (("${snapshot.data[index]["AMBIL"]}" == '1')
-                                                                                ? const Text("Diambil", style: const TextStyle(fontSize: 14, color: const Color(0xff20B726)))
-                                                                                : ("${snapshot.data[index]["AMBIL"]}" == '2')
-                                                                                    ? const Text("Tidak Diambil", style: const TextStyle(fontSize: 14, color: Color(0xff20B726)))
-                                                                                    : ElevatedButton(
-                                                                                        style: ButtonStyle(
-                                                                                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffc4c4c4)),
-                                                                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
-                                                                                            borderRadius: BorderRadius.circular(5),
-                                                                                          )),
-                                                                                        ),
-                                                                                        child: const Text(
-                                                                                          "Ambil",
-                                                                                          style: const TextStyle(fontSize: 12, color: Colors.black),
-                                                                                        ),
-                                                                                        onPressed: () {
-                                                                                          showDialog(
-                                                                                            context: context,
-                                                                                            builder: (BuildContext context) => _buildPopupAmbilJudul(context),
-                                                                                          );
-                                                                                        },
-                                                                                      ))
-                                                                            : Text(
-                                                                                ("${snapshot.data[index]["STATUS"]}" == '2') ? "Ditolak" : "Belum Diset",
-                                                                                style: const TextStyle(fontSize: 14, color: Color(0xff20B726)),
-                                                                              ),
-                                                                      ),
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: <
-                                                                            Widget>[
-                                                                          Container(
-                                                                            child:
-                                                                                IconButton(
-                                                                              onPressed: () {
-                                                                                deleteJudul(snapshot.data[index]["NOMOR"]);
-                                                                                Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
-                                                                              },
-                                                                              icon: const Icon(Icons.delete_outline),
-                                                                              color: const Color(0xFF578BB8),
-                                                                            ),
-                                                                          ),
-                                                                          IconButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                                                                return DetailJudul(nomor: "${snapshot.data[index]["NOMOR"]}");
-                                                                              }));
-                                                                            },
-                                                                            icon:
-                                                                                const Icon(Icons.arrow_forward_ios_outlined),
-                                                                            color:
-                                                                                const Color(0xFF578BB8),
-                                                                          ),
-                                                                        ],
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                      ElevatedButton(
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all<Color>(
-                                                  const Color(0xff578BB8)),
-                                          shape: MaterialStateProperty.all<
-                                                  RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          )),
-                                        ),
-                                        child: const Icon(
-                                          Icons.add_outlined,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            return const TambahJudul();
-                                          }));
-                                        },
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                          Color>(
+                                                      const Color(0xff578BB8)),
+                                              shape: MaterialStateProperty.all<
+                                                      RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                              )),
+                                            ),
+                                            child: const Icon(
+                                              Icons.add_outlined,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushReplacement(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return const TambahJudul();
+                                              }));
+                                            },
+                                          )
+                                        ],
                                       )
-                                    ],
-                                  )
-                                : Text("Tes"));
+                                    : Column(
+                                        children: [
+                                          Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: <Widget>[
+                                                Container(
+                                                  width: 141,
+                                                  height: 36,
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          26, 0, 26, 0),
+                                                  child: ElevatedButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all<
+                                                                      Color>(
+                                                                  const Color(
+                                                                      0xff578BB8)),
+                                                      shape: MaterialStateProperty.all<
+                                                              RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      )),
+                                                    ),
+                                                    child: const Text(
+                                                      "Judul Anda",
+                                                      style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) {
+                                                        return const Judul();
+                                                      }));
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  width: 141,
+                                                  height: 36,
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 26, 0),
+                                                  child: ElevatedButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all<
+                                                                      Color>(
+                                                                  const Color(
+                                                                      0xffffffff)),
+                                                      shape: MaterialStateProperty.all<
+                                                              RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      )),
+                                                    ),
+                                                    child: const Text(
+                                                      "Judul Orang Lain",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Colors.black),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) {
+                                                        return const JudulOrangLain();
+                                                      }));
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          Text(
+                                              "Tanggal Pengajuan Judul : ${snapshot.data[index]["TANGGAL_AWAL"]} s/d ${snapshot.data[index]["TANGGAL_AKHIR"]}"),
+                                          // ignore: dead_code, unnecessary_null_comparison
+                                          // ("${snapshot.data["TANGGAL_AWAL"]}" == true) ?
+                                          FutureBuilder<dynamic>(
+                                            future: viewJudul(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.error != null) {
+                                                return Text(
+                                                  "${snapshot.error}",
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                );
+                                              }
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                    child:
+                                                        const CircularProgressIndicator());
+                                              } else {
+                                                return Container(
+                                                  child: ListView.builder(
+                                                    physics:
+                                                        const AlwaysScrollableScrollPhysics(), // new
+                                                    controller: _controller,
+                                                    scrollDirection:
+                                                        Axis.vertical,
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                        snapshot.data.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            index) {
+                                                      return Container(
+                                                        child: Card(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  26,
+                                                                  14,
+                                                                  26,
+                                                                  0),
+                                                          child: Container(
+                                                            width:
+                                                                MediaQueryWidth *
+                                                                    0.867,
+                                                            constraints:
+                                                                const BoxConstraints(
+                                                                    maxHeight:
+                                                                        double
+                                                                            .infinity),
+                                                            child: SizedBox(
+                                                              child: Container(
+                                                                margin:
+                                                                    const EdgeInsets
+                                                                        .all(20),
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                        maxHeight:
+                                                                            double.infinity),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Container(
+                                                                          width:
+                                                                              239,
+                                                                          child:
+                                                                              Text(
+                                                                            "${snapshot.data[index]["JUDUL"]}",
+                                                                            style: const TextStyle(
+                                                                                fontSize: 14,
+                                                                                fontWeight: FontWeight.w600,
+                                                                                letterSpacing: 1),
+                                                                          ),
+                                                                        ),
+                                                                        Container(
+                                                                          child:
+                                                                              SizedBox(
+                                                                            width:
+                                                                                27,
+                                                                            height:
+                                                                                27,
+                                                                            child:
+                                                                                Container(
+                                                                              decoration: BoxDecoration(
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                                border: Border.all(
+                                                                                  color: const Color(0xFF578BB8),
+                                                                                  width: 1.0,
+                                                                                ),
+                                                                              ),
+                                                                              child: const Center(
+                                                                                child: Text(
+                                                                                  "1",
+                                                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    Container(
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Container(
+                                                                            width:
+                                                                                80,
+                                                                            height:
+                                                                                23,
+                                                                            child: ("${snapshot.data[index]["STATUS"]}" == '1')
+                                                                                ? (("${snapshot.data[index]["AMBIL"]}" == '1')
+                                                                                    ? const Text("Diambil", style: const TextStyle(fontSize: 14, color: const Color(0xff20B726)))
+                                                                                    : ("${snapshot.data[index]["AMBIL"]}" == '2')
+                                                                                        ? const Text("Tidak Diambil", style: const TextStyle(fontSize: 14, color: Color(0xff20B726)))
+                                                                                        : ElevatedButton(
+                                                                                            style: ButtonStyle(
+                                                                                              backgroundColor: MaterialStateProperty.all<Color>(const Color(0xffc4c4c4)),
+                                                                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                                                                                                borderRadius: BorderRadius.circular(5),
+                                                                                              )),
+                                                                                            ),
+                                                                                            child: const Text(
+                                                                                              "Ambil",
+                                                                                              style: const TextStyle(fontSize: 12, color: Colors.black),
+                                                                                            ),
+                                                                                            onPressed: () {
+                                                                                              showDialog(
+                                                                                                context: context,
+                                                                                                builder: (BuildContext context) => _buildPopupAmbilJudul(context),
+                                                                                              );
+                                                                                            },
+                                                                                          ))
+                                                                                : Text(
+                                                                                    ("${snapshot.data[index]["STATUS"]}" == '2') ? "Ditolak" : "Belum Diset",
+                                                                                    style: const TextStyle(fontSize: 14, color: Color(0xff20B726)),
+                                                                                  ),
+                                                                          ),
+                                                                          Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: <Widget>[
+                                                                              IconButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                                                                    return DetailJudul(nomor: "${snapshot.data[index]["NOMOR"]}");
+                                                                                  }));
+                                                                                },
+                                                                                icon: const Icon(Icons.arrow_forward_ios_outlined),
+                                                                                color: const Color(0xFF578BB8),
+                                                                              ),
+                                                                            ],
+                                                                          )
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                : Center(
+                                    child:
+                                        Text("Pengajuan Judul Belum Dibuka")));
                       },
                     ),
                   );

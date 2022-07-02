@@ -78,12 +78,16 @@ class _TanggalState extends State<Tanggal> {
   Widget build(BuildContext context) {
     final start = dateRange.start;
     final end = dateRange.end;
+    var formatter = new DateFormat('yyyy-MM-dd');
+    String formatstart = formatter.format(start);
+    String formatend = formatter.format(end);
+    print(formatend);
     final MediaQueryHeight = MediaQuery.of(context).size.height;
     final MediaQueryWidth = MediaQuery.of(context).size.width;
     dateinputawal.value =
-        TextEditingValue(text: "${start.day}-${start.month}-${start.year}");
+        TextEditingValue(text: "${formatstart}");
     dateinputakhir.value =
-        TextEditingValue(text: "${end.day}-${end.month}-${end.year}");
+        TextEditingValue(text: "${formatend}");
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(

@@ -4,6 +4,10 @@ import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
 import 'package:siapa/login/login.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import 'dart:async';
 
 class RekapStatusDiambil extends StatefulWidget {
   const RekapStatusDiambil({Key? key}) : super(key: key);
@@ -13,6 +17,47 @@ class RekapStatusDiambil extends StatefulWidget {
 }
 
 class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
+  TextEditingController searchnrp = TextEditingController();
+  String query = "";
+
+  Future viewRekap() async {
+    int nip = await SessionManager().get('nip');
+    String nipQuery = nip.toString();
+    var url = Uri.https(
+        'project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/rekapjudulmahasiswa.php',
+        {'nip': nipQuery});
+    var response = await http.get(url);
+    var jsonData = convert.jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      //  await SessionManager().set('NRP', jsonData['data']);
+      // var snapshot;
+      // return jsonData = snapshot.where(elem) =>
+      //       elem['contact_name']
+      //           .toString()
+      //           .toLowerCase()
+      //           .contains(query.toLowerCase()).toList();
+      // return jsonData.map((convert.json) => );
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
+  }
+
+  Future viewStatus() async {
+    // int nrp = await SessionManager().get('NRP');
+    // String nrpQuery = nrp.toString();
+    var url = Uri.https('project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/getstatus.php');
+    var response = await http.get(url);
+    var jsonData = convert.jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final MediaQueryHeight = MediaQuery.of(context).size.height;
@@ -151,72 +196,175 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
           Container(
             child: Column(
               children: [
-                Card(
-                  margin: EdgeInsets.fromLTRB(26, 14, 26, 0),
-                  child: Container(
-                    width: MediaQueryWidth * 0.867,
-                    constraints: BoxConstraints(maxHeight: double.infinity),
-                    child: SizedBox(
-                      child: Container(
-                        margin: EdgeInsets.all(20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(right: 10),
-                              child: Icon(
-                                Icons.account_circle_outlined,
-                                color: Color(0xFF578BB8),
-                              ),
-                            ),
-                            Container(
-                              width: 266,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                      "Muhammad Fagi",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 1),
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        child: Text(
-                                          "2103191020",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              letterSpacing: 1),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: Text(
-                                          "Disetujui Sudah Diambil",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              letterSpacing: 1,
-                                              color: Color(0xff20B726)),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                Container(
+                  width: MediaQueryWidth * 0.867,
+                  height: MediaQueryHeight * 0.052,
+                  child: TextField(
+                    controller: searchnrp,
+                    decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: false,
+                      prefixIcon: const Icon(Icons.search_outlined),
+                      hintText: "Cari NRP Mahasiswa",
+                      hintStyle:
+                          const TextStyle(fontSize: 12, letterSpacing: 0.5),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
+                    onChanged: (value) {
+                      setState(() {
+                        query = value;
+                        // viewJudulMahasiswa(value);
+                      });
+                    },
                   ),
                 ),
+                FutureBuilder<dynamic>(
+                  future: viewRekap(),
+                  builder: (context, snapshot) {
+                    if (snapshot.error != null) {
+                      return Text(
+                        "${snapshot.error}",
+                        style: const TextStyle(fontSize: 20),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return Container(
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (BuildContext context, index) {
+                            return snapshot.data[index]["NRP"].contains(query)
+                                ? Card(
+                                    margin: EdgeInsets.fromLTRB(26, 14, 26, 0),
+                                    child: Container(
+                                      width: MediaQueryWidth * 0.867,
+                                      constraints: BoxConstraints(
+                                          maxHeight: double.infinity),
+                                      child: SizedBox(
+                                        child: Container(
+                                          margin: EdgeInsets.all(20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(right: 10),
+                                                child: Icon(
+                                                  Icons.account_circle_outlined,
+                                                  color: Color(0xFF578BB8),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 266,
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                      child: Text(
+                                                        "${snapshot.data[index]["MAHASISWA"]}",
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            letterSpacing: 1),
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Container(
+                                                          child: Text(
+                                                            "${snapshot.data[index]["NRP"]}",
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                letterSpacing:
+                                                                    1),
+                                                          ),
+                                                        ),
+                                                        FutureBuilder<dynamic>(
+                                                          future: viewStatus(),
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            if (snapshot
+                                                                    .error !=
+                                                                null) {
+                                                              return Text(
+                                                                "${snapshot.error}",
+                                                                style:
+                                                                    const TextStyle(
+                                                                        fontSize:
+                                                                            20),
+                                                              );
+                                                            }
+                                                            if (snapshot
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .waiting) {
+                                                              return const Center(
+                                                                  child:
+                                                                      CircularProgressIndicator());
+                                                            } else {
+                                                              return Container(
+                                                                child: ListView
+                                                                    .builder(
+                                                                  shrinkWrap:
+                                                                      true,
+                                                                  itemCount: snapshot.data.length,
+                                                                  itemBuilder:
+                                                                      (BuildContext
+                                                                              context,
+                                                                          index) {
+                                                                    return Container(
+                                                                      child: 
+                                                                          Text(
+                                                                        "${snapshot.data[index]["STATUS"]}",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight: FontWeight
+                                                                                .w600,
+                                                                            letterSpacing:
+                                                                                1,
+                                                                            color:
+                                                                                Color(0xff20B726)),
+                                                                      )
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Container();
+                          },
+                        ),
+                      );
+                    }
+                  },
+                )
               ],
             ),
           ),

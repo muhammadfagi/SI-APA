@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -13,6 +15,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 // import '../controller/tambahdokumen.dart';
 
 class TambahJudul extends StatefulWidget {
@@ -109,15 +112,9 @@ class _TambahJudulState extends State<TambahJudul> {
         .files;
   }
 
-  Future uploadFile() async {
-    final path = '${_files!.first.name}';
-    final file = File(_files!.first.path!);
-
-    final ref = FirebaseStorage.instance.ref().putFile(file);
-  }
-
   Future tambahJudul() async {
     // try {
+
     int nomor = await SessionManager().get('NOMOR');
     String nomorQuery = nomor.toString();
     // print(judul.text);
@@ -133,11 +130,19 @@ class _TambahJudulState extends State<TambahJudul> {
     request.fields['PEMBIMBING1'] = nomordosen1!;
     request.fields['PEMBIMBING2'] = nomordosen2!;
     request.fields['PEMBIMBING3'] = nomordosen3!;
-    request.fields['PRIORITAS'] = prioritas.text;
+    // request.fields['PRIORITAS'] = prioritas.text;
     request.fields['MAHASISWA'] = nomorQuery;
     var response = await request.send();
-    final respStr = await response.stream.bytesToString();
-    print(respStr);
+    final responsed = await http.Response.fromStream(response);
+    final responsedata = jsonDecode(responsed.body);
+    print(responsedata['data']);
+ 
+    final path = responsedata['data'];
+    final extention = '${_files!.first.extension}';
+    final file = File(_files!.first.path!);
+
+    final ref = FirebaseStorage.instance.ref().child("$path.$extention");
+    ref.putFile(file);
     // } catch (e) {
     //   print("error catchnya $e");
     //   print("error");
@@ -407,8 +412,8 @@ class _TambahJudulState extends State<TambahJudul> {
                               controller: dokumen,
                               onTap: () {
                                 _openFile();
+                                // openFile();
                                 // controller.openfile()
-
                               },
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
@@ -421,32 +426,32 @@ class _TambahJudulState extends State<TambahJudul> {
                               ),
                             ),
                           ),
-                          // Prioritas
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 20, 0, 6),
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Prioritas",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 340,
-                            height: 40,
-                            child: TextField(
-                              controller: prioritas,
-                              decoration: InputDecoration(
-                                fillColor: Colors.white,
-                                filled: false,
-                                hintText: "Masukkan Prioritas",
-                                hintStyle:
-                                    TextStyle(fontSize: 12, letterSpacing: 0.5),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5)),
-                              ),
-                            ),
-                          ),
+                          // // Prioritas
+                          // Container(
+                          //   margin: EdgeInsets.fromLTRB(0, 20, 0, 6),
+                          //   alignment: Alignment.centerLeft,
+                          //   child: Text(
+                          //     "Prioritas",
+                          //     style: TextStyle(
+                          //         fontSize: 20, fontWeight: FontWeight.w400),
+                          //   ),
+                          // ),
+                          // SizedBox(
+                          //   width: 340,
+                          //   height: 40,
+                          //   child: TextField(
+                          //     controller: prioritas,
+                          //     decoration: InputDecoration(
+                          //       fillColor: Colors.white,
+                          //       filled: false,
+                          //       hintText: "Masukkan Prioritas",
+                          //       hintStyle:
+                          //           TextStyle(fontSize: 12, letterSpacing: 0.5),
+                          //       border: OutlineInputBorder(
+                          //           borderRadius: BorderRadius.circular(5)),
+                          //     ),
+                          //   ),
+                          // ),
                           // Konfirmasi
                           Container(
                             margin: EdgeInsets.only(top: 20),
