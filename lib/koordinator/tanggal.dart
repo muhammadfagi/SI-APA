@@ -414,9 +414,26 @@ class _TanggalState extends State<Tanggal> {
                         "Simpan",
                         style: TextStyle(fontSize: 20),
                       ),
-                      onPressed: () {
-                        setTanggal();
-                      },
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Set Tanggal'),
+                          content: const Text('Apakah Anda Yakin Mengeset Tanggal Ini?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setTanggal();
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const Tanggal()));
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],

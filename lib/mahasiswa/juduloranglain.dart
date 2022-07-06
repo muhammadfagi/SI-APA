@@ -5,6 +5,7 @@ import 'package:siapa/mahasiswa/penawarantopik.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
+
 // import 'package:flutter_session/flutter_session.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 
@@ -21,11 +22,13 @@ Future viewJudulOrangLain() async {
   String nrpQuery = nrp.toString();
   var url = Uri.https(
       'project.mis.pens.ac.id',
-      '/mis112/siapa/mahasiswa/api/content/juduloranglain.php/', {'nrp' : nrpQuery});
+      '/mis112/siapa/mahasiswa/api/content/juduloranglain.php/',
+      {'nrp': nrpQuery});
 
   var response = await http.get(url);
   var jsonData = convert.jsonDecode(response.body);
   if (response.statusCode == 200) {
+    print(jsonData['data']);
     return jsonData['data'];
   } else {
     print('No Response');
@@ -121,29 +124,29 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Text(
+        title: const Text(
           "Judul",
           style: TextStyle(
               color: Color(0xFF578BB8),
               fontSize: 20,
               fontWeight: FontWeight.bold),
         ),
-        iconTheme: IconThemeData(color: Color(0xFF578BB8)),
+        iconTheme: const IconThemeData(color: Color(0xFF578BB8)),
       ),
       drawer: Drawer(
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               height: 150,
-              color: Color(0xFF578BB8),
+              color: const Color(0xFF578BB8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Icon(
+                    child: const Icon(
                       Icons.account_circle_outlined,
                       color: Colors.white,
                       size: 55,
@@ -151,14 +154,14 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                   ),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
+                    child: const Text(
                       "Muhammad Fagi",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
+                    child: const Text(
                       "2103191020",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
@@ -166,18 +169,18 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return PenawaranTopik();
+                  return const PenawaranTopik();
                 }));
               },
-              leading: Icon(Icons.calendar_today_outlined),
-              title: Text(
+              leading: const Icon(Icons.calendar_today_outlined),
+              title: const Text(
                 "Penawaran Topik",
                 style: TextStyle(fontSize: 20),
               ),
@@ -186,11 +189,11 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return Judul();
+                  return const Judul();
                 }));
               },
-              leading: Icon(Icons.title),
-              title: Text(
+              leading: const Icon(Icons.title),
+              title: const Text(
                 "Judul Mahasiswa",
                 style: TextStyle(fontSize: 20),
               ),
@@ -202,18 +205,18 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                   onTap: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                      return Login();
+                      return const Login();
                     }));
                   },
-                  leading: Icon(Icons.logout),
-                  title: Text(
+                  leading: const Icon(Icons.logout),
+                  title: const Text(
                     "Logout",
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             )
           ],
@@ -231,17 +234,17 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                       Container(
                         width: 141,
                         height: 36,
-                        margin: EdgeInsets.fromLTRB(26, 0, 26, 0),
+                        margin: const EdgeInsets.fromLTRB(26, 0, 26, 0),
                         child: ElevatedButton(
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
-                                Color(0xffffffff)),
+                                const Color(0xffffffff)),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             )),
                           ),
-                          child: Text(
+                          child: const Text(
                             "Judul Anda",
                             style: TextStyle(
                                 fontSize: 12,
@@ -251,7 +254,7 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                           onPressed: () {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
-                              return Judul();
+                              return const Judul();
                             }));
                           },
                         ),
@@ -259,17 +262,17 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                       Container(
                         width: 141,
                         height: 36,
-                        margin: EdgeInsets.fromLTRB(0, 0, 26, 0),
+                        margin: const EdgeInsets.fromLTRB(0, 0, 26, 0),
                         child: ElevatedButton(
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
-                                Color(0xff578BB8)),
+                                const Color(0xff578BB8)),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             )),
                           ),
-                          child: Text(
+                          child: const Text(
                             "Judul Orang Lain",
                             style: TextStyle(
                                 fontSize: 12, fontWeight: FontWeight.w600),
@@ -277,7 +280,7 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                           onPressed: () {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
-                              return JudulOrangLain();
+                              return const JudulOrangLain();
                             }));
                           },
                         ),
@@ -291,27 +294,29 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                     if (snapshot.error != null) {
                       return Text(
                         "${snapshot.error}",
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
                       );
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else {
                       return Container(
                         child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(), // new
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          // new
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemCount: snapshot.data.length,
                           itemBuilder: (BuildContext context, index) {
                             return Container(
                               child: Card(
-                                margin: EdgeInsets.fromLTRB(26, 14, 26, 0),
+                                margin:
+                                    const EdgeInsets.fromLTRB(26, 14, 26, 0),
                                 child: SizedBox(
                                   width: 340,
                                   height: 134,
                                   child: Container(
-                                    margin: EdgeInsets.all(20),
+                                    margin: const EdgeInsets.all(20),
                                     child: Column(
                                       children: [
                                         Row(
@@ -322,7 +327,7 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                               width: 300,
                                               child: Text(
                                                 "${snapshot.data[index]["JUDUL"]}",
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
                                                     letterSpacing: 1),
@@ -332,30 +337,32 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                         ),
                                         Container(
                                           width: 233,
-                                          margin:
-                                              EdgeInsets.fromLTRB(0, 11, 0, 11),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              0, 11, 0, 11),
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                              color: Color(0xff578BB8)
+                                              color: const Color(0xff578BB8)
                                                   .withOpacity(0.75),
                                               width: 1.0,
                                             ),
                                           ),
                                         ),
                                         Container(
-                                            margin:
-                                                EdgeInsets.fromLTRB(0, 4, 0, 0),
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              "Pembimbing 1 : tes",
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            )),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              0, 4, 0, 0),
+                                          alignment: Alignment.topLeft,
+                                          child: Text(
+                                            // "Pembimbing ${snapshot.data[index]} : ${snapshot.data.dosen[index]["NAMA"]}",
+                                            "Pembimbing 1 : ${snapshot.data[index]["BIMBING1"]}",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ),
                                         Container(
                                           alignment: Alignment.topLeft,
                                           child: Text(
-                                            "Pembimbing 2 : Nana Ramadijanti, S.Kom, M.Kom",
+                                            "Pembimbing 2 : ${snapshot.data[index]["BIMBING2"]}",
                                             style: TextStyle(
                                                 color: Colors.black
                                                     .withOpacity(0.5)),
@@ -364,7 +371,7 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                         Container(
                                           alignment: Alignment.topLeft,
                                           child: Text(
-                                            "Pembimbing 3 : ",
+                                            "Pembimbing 3 : ${snapshot.data[index]["BIMBING3"]}",
                                             style: TextStyle(
                                                 color: Colors.black
                                                     .withOpacity(0.5)),

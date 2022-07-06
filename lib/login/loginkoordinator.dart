@@ -37,13 +37,22 @@ class _LoginKoordinatorState extends State<LoginKoordinator> {
         var dataUser = convert.jsonDecode(hasil.body);
         print("Login Berhasil");
         print(dataUser);
-        // print(dataUser);
-        // print(dataUser['NIP']);
         await SessionManager().set('nip', dataUser["NIP"]);
-        Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const JudulMahasiswa()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const JudulMahasiswa()));
       } else {
-        print("Bukan Koordinator");
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Login Gagal!'),
+            content: const Text('Periksa Email dan Password Anda'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Ok'),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
       }
       return true;
     } else {

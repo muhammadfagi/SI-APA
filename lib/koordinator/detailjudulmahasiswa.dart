@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
 import '../models/namadosen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailJudulMahasiswa extends StatefulWidget {
   final String nomor;
@@ -119,6 +120,18 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
       print("error catchnya $e");
       return null;
     }
+  }
+
+  Future opendokumen() async {
+    String nmr = widget.nomor;
+    print(nmr);
+    final url =  'https://project.mis.pens.ac.id/mis112/contents/fileberkas/' + nmr + ".pdf";
+    if(await canLaunch(url)){
+      await launch(url);
+    }else {
+      throw 'Could not launch $url';
+    }
+    // OpenFile.open("project.mis.pens.ac.id/mis112/contents/fileberkas/80.pdf");
   }
 
   @override
@@ -572,6 +585,7 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
                                     ),
                                   ),
                                   // Status Pengambilan
+                                  (snapshot.data["ÄMBIL"] != null) ?
                                   Container(
                                     child: Row(
                                       children: <Widget>[
@@ -600,6 +614,7 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
                                                           .withOpacity(0.6)),
                                                 ),
                                               ),
+                                              (snapshot.data["AMBIL"] == '1') ?
                                               Container(
                                                 margin: EdgeInsets.fromLTRB(
                                                     0, 4, 0, 0),
@@ -613,13 +628,27 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
+                                              ) :
+                                              Container(
+                                                margin: EdgeInsets.fromLTRB(
+                                                    0, 4, 0, 0),
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  "Tidak Diambil",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Color(0xff20B726)),
+                                                  maxLines: 6,
+                                                  overflow:
+                                                  TextOverflow.ellipsis,
+                                                ),
                                               )
                                             ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ) : Container()
                                 ],
                               ),
                               Container(
@@ -762,12 +791,14 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
                                                   )),
                                                 ),
                                                 child: Text(
-                                                  "Download",
+                                                  "Open File",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.black),
                                                 ),
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  opendokumen();
+                                                },
                                               ),
                                             ),
                                           ),

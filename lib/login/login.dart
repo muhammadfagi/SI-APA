@@ -39,7 +39,19 @@ class _LoginState extends State<Login> {
         print("Login Berhasil");
         print(dataUser["NRP"]);
       } else {
-        print("Bukan Mahasiswa Aktif");
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Login Gagal!'),
+            content: const Text('Periksa Email dan Password Anda'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Ok'),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
       }
       return true;
     } else {

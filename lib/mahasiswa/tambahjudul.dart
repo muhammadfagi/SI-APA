@@ -111,7 +111,6 @@ class _TambahJudulState extends State<TambahJudul> {
             .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']))!
         .files;
   }
-
   Future tambahJudul() async {
     // try {
 
@@ -136,7 +135,7 @@ class _TambahJudulState extends State<TambahJudul> {
     final responsed = await http.Response.fromStream(response);
     final responsedata = jsonDecode(responsed.body);
     print(responsedata['data']);
- 
+
     final path = responsedata['data'];
     final extention = '${_files!.first.extension}';
     final file = File(_files!.first.path!);
@@ -151,8 +150,18 @@ class _TambahJudulState extends State<TambahJudul> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {
+      tambahJudul();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    dokumen.value = TextEditingValue(text: "${_files?.first.name}");
+    dokumen.value = _files?.first.path != null
+        ? TextEditingValue(text: "${_files?.first.name}")
+        : TextEditingValue(text: "Masukkan File");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -426,32 +435,6 @@ class _TambahJudulState extends State<TambahJudul> {
                               ),
                             ),
                           ),
-                          // // Prioritas
-                          // Container(
-                          //   margin: EdgeInsets.fromLTRB(0, 20, 0, 6),
-                          //   alignment: Alignment.centerLeft,
-                          //   child: Text(
-                          //     "Prioritas",
-                          //     style: TextStyle(
-                          //         fontSize: 20, fontWeight: FontWeight.w400),
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   width: 340,
-                          //   height: 40,
-                          //   child: TextField(
-                          //     controller: prioritas,
-                          //     decoration: InputDecoration(
-                          //       fillColor: Colors.white,
-                          //       filled: false,
-                          //       hintText: "Masukkan Prioritas",
-                          //       hintStyle:
-                          //           TextStyle(fontSize: 12, letterSpacing: 0.5),
-                          //       border: OutlineInputBorder(
-                          //           borderRadius: BorderRadius.circular(5)),
-                          //     ),
-                          //   ),
-                          // ),
                           // Konfirmasi
                           Container(
                             margin: EdgeInsets.only(top: 20),
@@ -504,14 +487,29 @@ class _TambahJudulState extends State<TambahJudul> {
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600),
                                     ),
-                                    onPressed: () {
-                                      tambahJudul();
-                                      // tambahDokumen();
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => TambahJudul()));
-                                    },
+                                    onPressed: () => showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) => AlertDialog(
+                                        title: const Text('Tambah Judul'),
+                                        content: const Text('Apakah Anda Yakin Menambah Judul Ini?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, 'Cancel'),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, 'Ok');
+                                              setState(() {
+                                                tambahJudul();
+                                                Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
+                                              });
+                                            },
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],

@@ -10,11 +10,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
 import '../models/namadosen.dart';
+import '../models/prioritas.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 
 class DetailJudul extends StatefulWidget {
   final String nomor;
@@ -596,6 +598,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                     ),
                                   ),
                                   // Status Pengambilan
+                                  (snapshot.data["ÄMBIL"] != null) ?
                                   Container(
                                     child: Row(
                                       children: <Widget>[
@@ -624,6 +627,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                           .withOpacity(0.6)),
                                                 ),
                                               ),
+                                              (snapshot.data["AMBIL"] == '1') ?
                                               Container(
                                                 margin: EdgeInsets.fromLTRB(
                                                     0, 4, 0, 0),
@@ -637,13 +641,27 @@ class _DetailJudulState extends State<DetailJudul> {
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
+                                              ) :
+                                              Container(
+                                                margin: EdgeInsets.fromLTRB(
+                                                    0, 4, 0, 0),
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  "Tidak Diambil",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Color(0xff20B726)),
+                                                  maxLines: 6,
+                                                  overflow:
+                                                  TextOverflow.ellipsis,
+                                                ),
                                               )
                                             ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ) : Container()
                                 ],
                               ),
                               Container(
@@ -663,78 +681,145 @@ class _DetailJudulState extends State<DetailJudul> {
                                 ),
                               ),
                               // // Catatan
-                              // Container(
-                              //   child: Row(
-                              //     children: <Widget>[
-                              //       Container(
-                              //         child: Icon(
-                              //           Icons.notes_outlined,
-                              //           color: Color(0xFF578BB8),
-                              //           size: 30.0,
-                              //         ),
-                              //       ),
-                              //       Container(
-                              //         margin: EdgeInsets.fromLTRB(12, 0, 0, 0),
-                              //         width: 250.7,
-                              //         child: Column(
-                              //           children: <Widget>[
-                              //             Container(
-                              //               alignment: Alignment.topLeft,
-                              //               child: Text(
-                              //                 "Catatan",
-                              //                 style: TextStyle(
-                              //                     fontSize: 14,
-                              //                     fontWeight: FontWeight.w100,
-                              //                     color: Colors.black
-                              //                         .withOpacity(0.6)),
-                              //               ),
-                              //             ),
-                              //             Container(
-                              //               margin:
-                              //                   EdgeInsets.fromLTRB(0, 4, 0, 0),
-                              //               alignment: Alignment.topLeft,
-                              //               child: Text(
-                              //                 "${snapshot.data["CATATAN"]}",
-                              //                 style: TextStyle(fontSize: 14),
-                              //                 maxLines: 6,
-                              //                 overflow: TextOverflow.ellipsis,
-                              //               ),
-                              //             )
-                              //           ],
-                              //         ),
-                              //       ),
-                              //       IconButton(
-                              //         alignment: Alignment.topRight,
-                              //         onPressed: () {
-                              //           showDialog(
-                              //             context: context,
-                              //             builder: (BuildContext context) =>
-                              //                 _buildPopupCatatan(context),
-                              //           );
-                              //         },
-                              //         icon: Icon(Icons.edit_outlined),
-                              //         color: Color(0xFF578BB8),
-                              //         iconSize: 30.0,
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                              // Container(
-                              //   child: Align(
-                              //     alignment: Alignment.topRight,
-                              //     child: Container(
-                              //       width: 298,
-                              //       margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                              //       decoration: BoxDecoration(
-                              //         border: Border.all(
-                              //           color:
-                              //               Color(0xff578BB8).withOpacity(0.05),
-                              //           width: 1.0,
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
+                              Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    Container(
+                                      child: Icon(
+                                        Icons.notes_outlined,
+                                        color: Color(0xFF578BB8),
+                                        size: 30.0,
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.fromLTRB(12, 0, 0, 0),
+                                      width: 250.7,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              "Catatan",
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w100,
+                                                  color: Colors.black
+                                                      .withOpacity(0.6)),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin:
+                                                EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                            alignment: Alignment.topLeft,
+                                            child: (snapshot.data["CATATAN"] != null) ?  Text(
+                                              "${snapshot.data["CATATAN"]}",
+                                              style: TextStyle(fontSize: 14),
+                                              maxLines: 6,
+                                              overflow: TextOverflow.ellipsis,
+                                            ) : Text(
+                                              "Belum Ada Catatan",
+                                              style: TextStyle(fontSize: 14),
+                                              maxLines: 6,
+                                              overflow: TextOverflow.ellipsis,
+                                            )
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    width: 298,
+                                    margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color:
+                                            Color(0xff578BB8).withOpacity(0.05),
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // // Prioritas
+                              Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    Container(
+                                      child: Icon(
+                                        Icons.notes_outlined,
+                                        color: Color(0xFF578BB8),
+                                        size: 30.0,
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.fromLTRB(12, 0, 0, 0),
+                                      width: 250.7,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              "Prioritas",
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w100,
+                                                  color: Colors.black
+                                                      .withOpacity(0.6)),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin:
+                                            EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              "${snapshot.data["PRIORITAS"]}",
+                                              style: TextStyle(fontSize: 14),
+                                              maxLines: 6,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      alignment: Alignment.topRight,
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              _buildPopupPrioritas(context),
+                                        );
+                                      },
+                                      icon: Icon(Icons.edit_outlined),
+                                      color: Color(0xFF578BB8),
+                                      iconSize: 30.0,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    width: 298,
+                                    margin: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color:
+                                        Color(0xff578BB8).withOpacity(0.05),
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
                               // File
                               Container(
                                 child: Row(
@@ -796,7 +881,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                                   ),
                                             ),
                                           ),
-                                          Text("${snapshot.data["NOMOR"]}.pdf"),
+                                          // Text("${snapshot.data["NOMOR"]}.pdf"),
                                         ],
                                       ),
                                     ),
@@ -1196,10 +1281,10 @@ class _DetailJudulState extends State<DetailJudul> {
     );
   }
 
+  String prioritas = "";
   // pop up catatan
-  Future updateCatatan() async {
+  Future updatePrioritas() async {
     // try {
-
     String nmr = widget.nomor;
     // String nmrQuery = nmr.toString();
     print(nmr);
@@ -1208,10 +1293,10 @@ class _DetailJudulState extends State<DetailJudul> {
         Uri.https(
             'project.mis.pens.ac.id',
             '/mis112/siapa/mahasiswa/api/content/detailjudul.php',
-            {'function': 'editCatatan'}),
+            {'function': 'editPrioritas'}),
         body: convert.jsonEncode({
           'NOMOR': nmr,
-          'CATATAN': catatan.text,
+          'PRIORITAS': prioritas,
         }),
         headers: {
           "Accept": "application/json",
@@ -1220,11 +1305,11 @@ class _DetailJudulState extends State<DetailJudul> {
     print(hasil.body);
     // print(hasil.statusCode);
     if (hasil.statusCode == 200) {
-      print("Judul Berhasil Diedit");
+      print("Prioritas Berhasil Diedit");
       return true;
     } else {
       print("error status " + hasil.statusCode.toString());
-      print("Login Gagal");
+      print("Gagal");
       return false;
     }
     // } catch (e) {
@@ -1234,26 +1319,27 @@ class _DetailJudulState extends State<DetailJudul> {
     // }
   }
 
-  TextEditingController catatan = new TextEditingController();
-  Widget _buildPopupCatatan(BuildContext context) {
+  // TextEditingController catatan = new TextEditingController();
+  Widget _buildPopupPrioritas(BuildContext context) {
     return Container(
-      child: FutureBuilder<dynamic>(
-        future: updateCatatan(),
-        builder: (context, snapshot) {
-          if (snapshot.error != null) {
-            return Text(
-              "${snapshot.error}",
-              style: TextStyle(fontSize: 20),
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            catatan.value = TextEditingValue(text: "tes");
-            return Container(
+      // child: FutureBuilder<dynamic>(
+      //   future: updateCatatan(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.error != null) {
+      //       return Text(
+      //         "${snapshot.error}",
+      //         style: TextStyle(fontSize: 20),
+      //       );
+      //     }
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return Center(child: CircularProgressIndicator());
+      //     } else {
+      //       // catatan.value = TextEditingValue(text: "tes");
+      //       return
+      //         Container(
               child: new AlertDialog(
                 title: const Text(
-                  'Edit Catatan',
+                  'Edit Prioritas',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -1268,25 +1354,22 @@ class _DetailJudulState extends State<DetailJudul> {
                       margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Catatan",
+                        "Prioritas",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w200),
                       ),
                     ),
-                    SizedBox(
-                      width: 340,
-                      height: 40,
-                      child: TextField(
-                        controller: catatan,
-                        decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: false,
-                          hintText: "Masukkan Catatan",
-                          hintStyle:
-                              TextStyle(fontSize: 12, letterSpacing: 0.5),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                        ),
+                    Container(
+                      child: DropdownSearch<String>(
+                        mode: Mode.MENU,
+                        items: ["1", "2"],
+                        hint: "Pilih Prioritas",
+                        onChanged: (valueprioritas) {
+                          setState(() {
+                            prioritas = valueprioritas!;
+                            // viewJudulMahasiswa(value);
+                          });
+                        },
                       ),
                     ),
                   ],
@@ -1312,7 +1395,7 @@ class _DetailJudulState extends State<DetailJudul> {
                         width: 110,
                         child: new ElevatedButton(
                           onPressed: () {
-                            updateCatatan();
+                            updatePrioritas();
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (_) => Judul()));
                           },
@@ -1327,10 +1410,10 @@ class _DetailJudulState extends State<DetailJudul> {
                   ),
                 ],
               ),
-            );
-          }
-        },
-      ),
+      //       );
+      //     }
+      //   },
+      // ),
     );
   }
 
@@ -1375,21 +1458,21 @@ class _DetailJudulState extends State<DetailJudul> {
   TextEditingController rangkuman = new TextEditingController();
   Widget _buildPopupRangkuman(BuildContext context) {
     return Container(
-      child: FutureBuilder<dynamic>(
-        future: viewDetailJudul(),
-        builder: (context, snapshot) {
-          if (snapshot.error != null) {
-            return Text(
-              "${snapshot.error}",
-              style: TextStyle(fontSize: 20),
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            rangkuman.value =
-                TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
-            return Container(
+      // child: FutureBuilder<dynamic>(
+      //   future: viewDetailJudul(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.error != null) {
+      //       return Text(
+      //         "${snapshot.error}",
+      //         style: TextStyle(fontSize: 20),
+      //       );
+      //     }
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return Center(child: CircularProgressIndicator());
+      //     } else {
+      //       rangkuman.value =
+      //           TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
+      //       return Container(
               child: new AlertDialog(
                 title: const Text(
                   'Edit Catatan',
@@ -1416,7 +1499,7 @@ class _DetailJudulState extends State<DetailJudul> {
                       width: 340,
                       height: 350,
                       child: TextField(
-                        controller: rangkuman,
+                        // controller: rangkuman,
                         maxLines: 20,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
@@ -1467,10 +1550,10 @@ class _DetailJudulState extends State<DetailJudul> {
                   ),
                 ],
               ),
-            );
-          }
-        },
-      ),
+      //       );
+      //     }
+      //   },
+      // ),
     );
   }
 
@@ -1508,20 +1591,20 @@ class _DetailJudulState extends State<DetailJudul> {
   // TextEditingController catatan = new TextEditingController();
   Widget _buildPopupFile(BuildContext context) {
     return Container(
-      child: FutureBuilder<dynamic>(
-        future: updateCatatan(),
-        builder: (context, snapshot) {
-          if (snapshot.error != null) {
-            return Text(
-              "${snapshot.error}",
-              style: TextStyle(fontSize: 20),
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            catatan.value = TextEditingValue(text: "tes");
-            return Container(
+      // child: FutureBuilder<dynamic>(
+      //   future: updateCatatan(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.error != null) {
+      //       return Text(
+      //         "${snapshot.error}",
+      //         style: TextStyle(fontSize: 20),
+      //       );
+      //     }
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return Center(child: CircularProgressIndicator());
+      //     } else {
+      //       // catatan.value = TextEditingValue(text: "tes");
+      //       return Container(
               child: new AlertDialog(
                 title: const Text(
                   'Edit Catatan',
@@ -1600,10 +1683,10 @@ class _DetailJudulState extends State<DetailJudul> {
                   ),
                 ],
               ),
-            );
-          }
-        },
-      ),
+      //       );
+      //     }
+      //   },
+      // ),
     );
   }
 }

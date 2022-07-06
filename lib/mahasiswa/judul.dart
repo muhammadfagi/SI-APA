@@ -24,6 +24,7 @@ class _JudulState extends State<Judul> {
   ScrollController _controller = new ScrollController();
 
   String? idJudul;
+
   Future viewJudul() async {
     // try {
     int nrp = await SessionManager().get('nrp');
@@ -73,27 +74,27 @@ class _JudulState extends State<Judul> {
     // }
   }
 
-  Future getNomorJudul() async {
-    try {
-      var url = Uri.https(
-        'project.mis.pens.ac.id',
-        '/mis112/siapa/mahasiswa/api/content/getnomorjudul.php/',
-      );
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        dynamic jsonData = convert.jsonDecode(response.body);
-        var nomor = jsonData['data']['NOMOR'];
-        print(nomor);
-        await SessionManager().set('NOMOR', jsonData['data']['NOMOR']);
-        return jsonData['data']['NOMOR'];
-      } else {
-        print('No Response');
-      }
-    } catch (e) {
-      print("error catchnya $e");
-      return null;
-    }
-  }
+  // Future getNomorJudul() async {
+  //   try {
+  //     var url = Uri.https(
+  //       'project.mis.pens.ac.id',
+  //       '/mis112/siapa/mahasiswa/api/content/getnomorjudul.php/',
+  //     );
+  //     var response = await http.get(url);
+  //     if (response.statusCode == 200) {
+  //       dynamic jsonData = convert.jsonDecode(response.body);
+  //       var nomor = jsonData['data']['NOMOR'];
+  //       print(nomor);
+  //       await SessionManager().set('NOMOR', jsonData['data']['NOMOR']);
+  //       return jsonData['data']['NOMOR'];
+  //     } else {
+  //       print('No Response');
+  //     }
+  //   } catch (e) {
+  //     print("error catchnya $e");
+  //     return null;
+  //   }
+  // }
 
   Future deleteJudul(id) async {
     var url = Uri.https('project.mis.pens.ac.id',
@@ -296,7 +297,8 @@ class _JudulState extends State<Judul> {
                 } else {
                   return Container(
                     child: ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(), // new
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      // new
                       controller: _controller,
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
@@ -411,9 +413,13 @@ class _JudulState extends State<Judul> {
                                               ],
                                             ),
                                           ),
+                                          Container(
+                                            margin: const EdgeInsets.fromLTRB(
+                                                26, 14, 26, 0),
+                                            child: Text(
+                                                "Tanggal Pengajuan Judul : ${snapshot.data[index]["TANGGAL_AWAL"]} s/d ${snapshot.data[index]["TANGGAL_AKHIR"]}"),
+                                          ),
 
-                                          Text(
-                                              "Tanggal Pengajuan Judul : ${snapshot.data[index]["TANGGAL_AWAL"]} s/d ${snapshot.data[index]["TANGGAL_AKHIR"]}"),
                                           // ignore: dead_code, unnecessary_null_comparison
                                           // ("${snapshot.data["TANGGAL_AWAL"]}" == true) ?
                                           FutureBuilder<dynamic>(
@@ -435,7 +441,8 @@ class _JudulState extends State<Judul> {
                                                 return Container(
                                                   child: ListView.builder(
                                                     physics:
-                                                        const AlwaysScrollableScrollPhysics(), // new
+                                                        const AlwaysScrollableScrollPhysics(),
+                                                    // new
                                                     controller: _controller,
                                                     scrollDirection:
                                                         Axis.vertical,
@@ -508,9 +515,9 @@ class _JudulState extends State<Judul> {
                                                                                   width: 1.0,
                                                                                 ),
                                                                               ),
-                                                                              child: const Center(
+                                                                              child: Center(
                                                                                 child: Text(
-                                                                                  "1",
+                                                                                  "${snapshot.data[index]["PRIORITAS"]}",
                                                                                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1),
                                                                                 ),
                                                                               ),
@@ -530,8 +537,7 @@ class _JudulState extends State<Judul> {
                                                                                 130,
                                                                             height:
                                                                                 23,
-                                                                            child:
-                                                                                ("${snapshot.data[index]["STATUS"]}" == '1')
+                                                                            child: ("${snapshot.data[index]["STATUS"]}" == '1')
                                                                                 ? (("${snapshot.data[index]["AMBIL"]}" == '1')
                                                                                     ? const Text("Diambil", style: const TextStyle(fontSize: 14, color: const Color(0xff20B726)))
                                                                                     : ("${snapshot.data[index]["AMBIL"]}" == '2')
@@ -548,10 +554,31 @@ class _JudulState extends State<Judul> {
                                                                             children: <Widget>[
                                                                               Container(
                                                                                 child: IconButton(
-                                                                                  onPressed: () {
-                                                                                    deleteJudul(snapshot.data[index]["NOMOR"]);
-                                                                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
-                                                                                  },
+                                                                                  onPressed: () => showDialog<String>(
+                                                                                    context: context,
+                                                                                    builder: (BuildContext context) => AlertDialog(
+                                                                                      title: const Text('Hapus Judul'),
+                                                                                      content: const Text('Apakah Anda Yakin Menghapus Judul Ini?'),
+                                                                                      actions: <Widget>[
+                                                                                        TextButton(
+                                                                                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                                                                                          child: const Text('Cancel'),
+                                                                                        ),
+                                                                                        TextButton(
+                                                                                          onPressed: () {
+                                                                                            deleteJudul(snapshot.data[index]["NOMOR"]);
+                                                                                            Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
+                                                                                          },
+                                                                                          child: const Text('OK'),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                  // {
+
+                                                                                  // deleteJudul(snapshot.data[index]["NOMOR"]);
+                                                                                  // Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
+                                                                                  // },
                                                                                   icon: const Icon(Icons.delete_outline),
                                                                                   color: const Color(0xFF578BB8),
                                                                                 ),
@@ -583,30 +610,76 @@ class _JudulState extends State<Judul> {
                                               }
                                             },
                                           ),
-                                          ElevatedButton(
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                          Color>(
-                                                      const Color(0xff578BB8)),
-                                              shape: MaterialStateProperty.all<
-                                                      RoundedRectangleBorder>(
-                                                  RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                              )),
-                                            ),
-                                            child: const Icon(
-                                              Icons.add_outlined,
-                                            ),
-                                            onPressed: () {
-                                              Navigator.pushReplacement(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return const TambahJudul();
-                                              }));
-                                            },
-                                          )
+                                          //
+                                          FutureBuilder<dynamic>(
+                                              future: viewJudul(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.error != null) {
+                                                  return Text(
+                                                    "${snapshot.error}",
+                                                    style: const TextStyle(
+                                                        fontSize: 20),
+                                                  );
+                                                }
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return const Center(
+                                                      child:
+                                                          const CircularProgressIndicator());
+                                                } else {
+                                                  return Container(
+                                                      child: ListView.builder(
+                                                          physics:
+                                                              const AlwaysScrollableScrollPhysics(),
+                                                          // new
+                                                          controller:
+                                                              _controller,
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          shrinkWrap: true,
+                                                          itemCount: snapshot
+                                                              .data.length,
+                                                          itemBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  index) {
+                                                            return
+                                                              (snapshot.data.length == 2) ?
+                                                                  Container() :
+                                                              ElevatedButton(
+                                                              style:
+                                                                  ButtonStyle(
+                                                                backgroundColor:
+                                                                    MaterialStateProperty.all<
+                                                                            Color>(
+                                                                        const Color(
+                                                                            0xff578BB8)),
+                                                                shape: MaterialStateProperty.all<
+                                                                        RoundedRectangleBorder>(
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5),
+                                                                )),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .add_outlined,
+                                                              ),
+                                                              onPressed: () {
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) {
+                                                                  return const TambahJudul();
+                                                                }));
+                                                              },
+                                                            );
+                                                          }));
+                                                }
+                                              })
                                         ],
                                       )
                                     : Column(
@@ -725,7 +798,8 @@ class _JudulState extends State<Judul> {
                                                 return Container(
                                                   child: ListView.builder(
                                                     physics:
-                                                        const AlwaysScrollableScrollPhysics(), // new
+                                                        const AlwaysScrollableScrollPhysics(),
+                                                    // new
                                                     controller: _controller,
                                                     scrollDirection:
                                                         Axis.vertical,
@@ -953,6 +1027,7 @@ class _JudulState extends State<Judul> {
   }
 
   TextEditingController tahunajaran = TextEditingController();
+
   Widget _buildPopupAmbilJudul(BuildContext context) {
     return Container(
       child: FutureBuilder<dynamic>(
@@ -969,7 +1044,8 @@ class _JudulState extends State<Judul> {
           } else {
             return Container(
               child: ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(), // new
+                physics: const AlwaysScrollableScrollPhysics(),
+                // new
                 controller: _controller,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
