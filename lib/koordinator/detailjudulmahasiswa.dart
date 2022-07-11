@@ -153,7 +153,7 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         title: Text(
-          "Detail Judul Anda",
+          "Detail Judul Mahasiswa",
           style: TextStyle(
               color: Color(0xFF578BB8),
               fontSize: 20,
@@ -1229,7 +1229,7 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
   Widget _buildPopupCatatan(BuildContext context) {
     return Container(
       child: FutureBuilder<dynamic>(
-        future: updateCatatan(),
+        future: viewDetailJudulMahasiswa(),
         builder: (context, snapshot) {
           if (snapshot.error != null) {
             return Text(
@@ -1240,7 +1240,7 @@ class _DetailJudulMahasiswaState extends State<DetailJudulMahasiswa> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else {
-            catatan.value = TextEditingValue(text: "tes");
+            catatan.value = TextEditingValue(text: "${snapshot.data["CATATAN"]}");
             return Container(
               child: new AlertDialog(
                 title: const Text(

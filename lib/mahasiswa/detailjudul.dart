@@ -752,7 +752,7 @@ class _DetailJudulState extends State<DetailJudul> {
                                   children: <Widget>[
                                     Container(
                                       child: Icon(
-                                        Icons.notes_outlined,
+                                        Icons.priority_high,
                                         color: Color(0xFF578BB8),
                                         size: 30.0,
                                       ),
@@ -1458,24 +1458,24 @@ class _DetailJudulState extends State<DetailJudul> {
   TextEditingController rangkuman = new TextEditingController();
   Widget _buildPopupRangkuman(BuildContext context) {
     return Container(
-      // child: FutureBuilder<dynamic>(
-      //   future: viewDetailJudul(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.error != null) {
-      //       return Text(
-      //         "${snapshot.error}",
-      //         style: TextStyle(fontSize: 20),
-      //       );
-      //     }
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return Center(child: CircularProgressIndicator());
-      //     } else {
-      //       rangkuman.value =
-      //           TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
-      //       return Container(
+      child: FutureBuilder<dynamic>(
+        future: viewDetailJudul(),
+        builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return Text(
+              "${snapshot.error}",
+              style: TextStyle(fontSize: 20),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            rangkuman.value =
+                TextEditingValue(text: "${snapshot.data["RANGKUMAN"]}");
+            return Container(
               child: new AlertDialog(
                 title: const Text(
-                  'Edit Catatan',
+                  'Edit Rangkuman',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -1499,7 +1499,7 @@ class _DetailJudulState extends State<DetailJudul> {
                       width: 340,
                       height: 350,
                       child: TextField(
-                        // controller: rangkuman,
+                        controller: rangkuman,
                         maxLines: 20,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
@@ -1550,10 +1550,10 @@ class _DetailJudulState extends State<DetailJudul> {
                   ),
                 ],
               ),
-      //       );
-      //     }
-      //   },
-      // ),
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -1607,7 +1607,7 @@ class _DetailJudulState extends State<DetailJudul> {
       //       return Container(
               child: new AlertDialog(
                 title: const Text(
-                  'Edit Catatan',
+                  'Edit Dokumen',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -1622,7 +1622,7 @@ class _DetailJudulState extends State<DetailJudul> {
                       margin: EdgeInsets.fromLTRB(0, 5, 0, 6),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Catatan",
+                        "Dokumen",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w200),
                       ),

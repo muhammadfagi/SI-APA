@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:siapa/login/pilihlogin.dart';
@@ -24,6 +24,7 @@ class _JudulState extends State<Judul> {
   ScrollController _controller = new ScrollController();
 
   String? idJudul;
+  String? valuetahunajaran;
 
   Future viewJudul() async {
     // try {
@@ -38,7 +39,7 @@ class _JudulState extends State<Judul> {
     var response = await http.get(url);
     var jsonData = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
-      // print(jsonData['data']);
+      print(jsonData['data']);
       return jsonData['data'];
     } else {
       print('No Response');
@@ -234,19 +235,6 @@ class _JudulState extends State<Judul> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return const PenawaranTopik();
-                }));
-              },
-              leading: const Icon(Icons.calendar_today_outlined),
-              title: const Text(
-                "Penawaran Topik",
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) {
                   return const Judul();
                 }));
               },
@@ -420,7 +408,6 @@ class _JudulState extends State<Judul> {
                                                 "Tanggal Pengajuan Judul : ${snapshot.data[index]["TANGGAL_AWAL"]} s/d ${snapshot.data[index]["TANGGAL_AKHIR"]}"),
                                           ),
 
-                                          // ignore: dead_code, unnecessary_null_comparison
                                           // ("${snapshot.data["TANGGAL_AWAL"]}" == true) ?
                                           FutureBuilder<dynamic>(
                                             future: viewJudul(),
@@ -610,76 +597,87 @@ class _JudulState extends State<Judul> {
                                               }
                                             },
                                           ),
-                                          //
-                                          FutureBuilder<dynamic>(
-                                              future: viewJudul(),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.error != null) {
-                                                  return Text(
-                                                    "${snapshot.error}",
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
-                                                  );
-                                                }
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.waiting) {
-                                                  return const Center(
-                                                      child:
-                                                          const CircularProgressIndicator());
-                                                } else {
-                                                  return Container(
-                                                      child: ListView.builder(
-                                                          physics:
-                                                              const AlwaysScrollableScrollPhysics(),
-                                                          // new
-                                                          controller:
-                                                              _controller,
-                                                          scrollDirection:
-                                                              Axis.vertical,
-                                                          shrinkWrap: true,
-                                                          itemCount: snapshot
-                                                              .data.length,
-                                                          itemBuilder:
-                                                              (BuildContext
-                                                                      context,
-                                                                  index) {
-                                                            return
-                                                              (snapshot.data.length == 2) ?
-                                                                  Container() :
-                                                              ElevatedButton(
-                                                              style:
-                                                                  ButtonStyle(
-                                                                backgroundColor:
-                                                                    MaterialStateProperty.all<
-                                                                            Color>(
-                                                                        const Color(
-                                                                            0xff578BB8)),
-                                                                shape: MaterialStateProperty.all<
-                                                                        RoundedRectangleBorder>(
-                                                                    RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              5),
-                                                                )),
-                                                              ),
-                                                              child: const Icon(
-                                                                Icons
-                                                                    .add_outlined,
-                                                              ),
-                                                              onPressed: () {
-                                                                Navigator.pushReplacement(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) {
-                                                                  return const TambahJudul();
-                                                                }));
-                                                              },
-                                                            );
-                                                          }));
-                                                }
-                                              })
+
+                                          // FutureBuilder<dynamic>(
+                                          //   future: viewJudul(),
+                                          //   builder: (context, snapshot) {
+                                          //     if (snapshot.error != null) {
+                                          //       return Text("${snapshot.error}", style: const TextStyle(fontSize: 20),
+                                          //       );
+                                          //     }
+                                          //     if (snapshot.connectionState == ConnectionState.waiting) {
+                                          //       return const Center(
+                                          //           child: const CircularProgressIndicator());
+                                          //     } if(snapshot.data == null) {
+                                          //       return ElevatedButton(
+                                          //         style: ButtonStyle(
+                                          //           backgroundColor: MaterialStateProperty.all<Color>(const Color(
+                                          //               0xff578BB8),),
+                                          //           shape: MaterialStateProperty.all<
+                                          //               RoundedRectangleBorder>(
+                                          //             RoundedRectangleBorder(
+                                          //               borderRadius: BorderRadius.circular(5),
+                                          //             ),),
+                                          //         ),
+                                          //         child: const Icon(Icons.add_outlined,
+                                          //         ),
+                                          //         onPressed: () {
+                                          //           Navigator.pushReplacement(context, MaterialPageRoute(
+                                          //             builder: (context) {return const TambahJudul();
+                                          //             },
+                                          //           ),
+                                          //           );
+                                          //         },
+                                          //       );
+                                          //     }
+                                          //     else {
+                                          //       return Container(
+                                          //         child: ListView.builder(
+                                          //           physics: const AlwaysScrollableScrollPhysics(),
+                                          //           // new
+                                          //           // controller: _controller,
+                                          //           scrollDirection: Axis.vertical,
+                                          //           shrinkWrap: true,
+                                          //           itemCount: snapshot.data.length,
+                                          //           itemBuilder: (BuildContext context, index) {
+                                          //             return
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(
+                                                const Color(0xff578BB8),
+                                              ),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.add_outlined,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const TambahJudul();
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          Text("Max Mengajukan 2 Judul!!")
+                                          // );
+                                          //                             },
+                                          //                           ),
+                                          //                         );
+                                          //                       }
+                                          //                     },
+                                          //                   )
                                         ],
                                       )
                                     : Column(
@@ -1005,7 +1003,7 @@ class _JudulState extends State<Judul> {
             '/mis112/siapa/mahasiswa/api/content/juduldiambil.php'),
         body: convert.jsonEncode({
           'nomor': nomor,
-          'TAHUN_AJARAN': tahunajaran.text,
+          'TAHUN_AJARAN': valuetahunajaran,
         }),
         headers: {
           "Accept": "application/json",
@@ -1029,6 +1027,8 @@ class _JudulState extends State<Judul> {
   TextEditingController tahunajaran = TextEditingController();
 
   Widget _buildPopupAmbilJudul(BuildContext context) {
+    final MediaQueryHeight = MediaQuery.of(context).size.height;
+    final MediaQueryWidth = MediaQuery.of(context).size.width;
     return Container(
       child: FutureBuilder<dynamic>(
         future: viewJudul(),
@@ -1074,20 +1074,18 @@ class _JudulState extends State<Judul> {
                                   fontSize: 20, fontWeight: FontWeight.w200),
                             ),
                           ),
-                          SizedBox(
-                            width: 340,
-                            height: 40,
-                            child: TextField(
-                              controller: tahunajaran,
-                              decoration: InputDecoration(
-                                fillColor: Colors.white,
-                                filled: false,
-                                hintText: "Masukkan Tahun Ajaran",
-                                hintStyle: const TextStyle(
-                                    fontSize: 12, letterSpacing: 0.5),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5)),
-                              ),
+                          Container(
+                            width: MediaQueryWidth * 0.360,
+                            height: MediaQueryHeight * 0.050,
+                            child: DropdownSearch<String>(
+                              mode: Mode.MENU,
+                              items: ["2019/2020", "2020/2021", "2021/2022", "2022/2023"],
+                              hint: "Pilih Status",
+                              onChanged: (value) {
+                                setState(() {
+                                  valuetahunajaran = value;
+                                });
+                              },
                             ),
                           ),
                         ],

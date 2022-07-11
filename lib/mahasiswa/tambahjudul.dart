@@ -105,11 +105,15 @@ class _TambahJudulState extends State<TambahJudul> {
   // }
 
   List<PlatformFile>? _files;
+  String? filename;
 
   Future _openFile() async {
     _files = (await FilePicker.platform
             .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']))!
         .files;
+     setState(() {
+       _files!.first.name;
+     });
   }
   Future tambahJudul() async {
     // try {
@@ -118,6 +122,12 @@ class _TambahJudulState extends State<TambahJudul> {
     String nomorQuery = nomor.toString();
     // print(judul.text);
     print(nomorQuery);
+    var dosen3;
+    if(nomordosen3 == null){
+      dosen3 = "";
+    } else {
+      dosen3 = nomordosen3;
+    }
 
     var uri = Uri.https('project.mis.pens.ac.id',
         '/mis112/siapa/mahasiswa/api/content/tambahjudul.php');
@@ -128,7 +138,7 @@ class _TambahJudulState extends State<TambahJudul> {
     request.fields['RANGKUMAN'] = rangkuman.text;
     request.fields['PEMBIMBING1'] = nomordosen1!;
     request.fields['PEMBIMBING2'] = nomordosen2!;
-    request.fields['PEMBIMBING3'] = nomordosen3!;
+    request.fields['PEMBIMBING3'] = dosen3;
     // request.fields['PRIORITAS'] = prioritas.text;
     request.fields['MAHASISWA'] = nomorQuery;
     var response = await request.send();
@@ -159,9 +169,7 @@ class _TambahJudulState extends State<TambahJudul> {
 
   @override
   Widget build(BuildContext context) {
-    dokumen.value = _files?.first.path != null
-        ? TextEditingValue(text: "${_files?.first.name}")
-        : TextEditingValue(text: "Masukkan File");
+    dokumen.value = TextEditingValue(text: _files!.first.name);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -250,6 +258,38 @@ class _TambahJudulState extends State<TambahJudul> {
                                 hintText: "Masukkan Rangkuman",
                                 hintStyle:
                                     TextStyle(fontSize: 12, letterSpacing: 0.5),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                            ),
+                          ),
+                          // File
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 20, 0, 6),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Dokumen Usulan",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 340,
+                            height: 40,
+                            child: TextField(
+                              readOnly: true,
+                              controller: dokumen,
+                              onTap: () {
+                                _openFile();
+                                // openFile();
+                                // controller.openfile()
+                              },
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: false,
+                                hintText: "Masukkan File",
+                                hintStyle:
+                                TextStyle(fontSize: 12, letterSpacing: 0.5),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(5)),
                               ),
@@ -403,38 +443,7 @@ class _TambahJudulState extends State<TambahJudul> {
                               },
                             ),
                           ),
-                          // File
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 20, 0, 6),
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Dokumen Usulan",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 340,
-                            height: 40,
-                            child: TextField(
-                              readOnly: true,
-                              controller: dokumen,
-                              onTap: () {
-                                _openFile();
-                                // openFile();
-                                // controller.openfile()
-                              },
-                              decoration: InputDecoration(
-                                fillColor: Colors.white,
-                                filled: false,
-                                hintText: "Masukkan File",
-                                hintStyle:
-                                    TextStyle(fontSize: 12, letterSpacing: 0.5),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5)),
-                              ),
-                            ),
-                          ),
+
                           // Konfirmasi
                           Container(
                             margin: EdgeInsets.only(top: 20),
@@ -487,29 +496,126 @@ class _TambahJudulState extends State<TambahJudul> {
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600),
                                     ),
-                                    onPressed: () => showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) => AlertDialog(
-                                        title: const Text('Tambah Judul'),
-                                        content: const Text('Apakah Anda Yakin Menambah Judul Ini?'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                                            child: const Text('Cancel'),
+                                    onPressed: () {
+                                      if(nomordosen1 == null) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Kosong'),
+                                            content: const Text('Dosen Pembimbing 1 Tidak Boleh Kosong!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
                                           ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context, 'Ok');
-                                              setState(() {
-                                                tambahJudul();
-                                                Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
-                                              });
-                                            },
-                                            child: const Text('OK'),
+                                        );
+                                      } else if(nomordosen2 == null) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Kosong'),
+                                            content: const Text('Dosen Pembimbing 2 Tidak Boleh Kosong!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ),
+                                        );
+                                      }else if(_files!.first.path == null) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Kosong'),
+                                            content: const Text('Dokumen Tidak Boleh Kosong!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }else if(judul.text == null) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Kosong'),
+                                            content: const Text('Judul Tidak Boleh Kosong!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }else if(rangkuman.text == null) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Kosong'),
+                                            content: const Text('Rangkuman Tidak Boleh Kosong!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      } else if(nomordosen1 == nomordosen2) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Error!!'),
+                                            content: const Text('Dosen Tidak Boleh Sama!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }else if(nomordosen1 == nomordosen3) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Error!!'),
+                                            content: const Text('Dosen Tidak Boleh Sama!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }else if(nomordosen3 == nomordosen2) {
+                                        showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                            title: const Text('Data Error!!'),
+                                            content: const Text('Dosen Tidak Boleh Sama!'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Ok'),
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      } else {
+                                        setState(() {
+                                          tambahJudul();
+                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Judul()));
+                                        });
+                                      }
+                                    },
                                   ),
                                 ),
                               ],

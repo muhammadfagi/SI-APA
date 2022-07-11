@@ -37,7 +37,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
     var response = await http.get(url);
     var jsonData = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
-      // print(jsonData['data']);
+      print(jsonData['data']);
       return jsonData['data'];
     } else {
       print('No Response');
@@ -80,6 +80,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
           'KELAS' : nomorkelas,
         }));
     var jsonData = convert.jsonDecode(response.body);
+    // print(jsonData['data']);
     if (response.statusCode == 200) {
       return jsonData['data'];
     } else {
@@ -87,88 +88,88 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
     }
   }
 
-  Future viewRekapStatusMahasiswa() async {
-    var status;
-    if (statusmahasiswa == "Mahasiswa Luar Negeri") {
-      status = 'E';
-    } else if (statusmahasiswa == "Tanpa Keterangan") {
-      status = 'T';
-    } else if (statusmahasiswa == "Aktif") {
-      status = 'A';
-    } else if (statusmahasiswa == "Lulus") {
-      status = 'L';
-    } else if (statusmahasiswa == "Cuti") {
-      status = 'C';
-    } else if (statusmahasiswa == "DO") {
-      status = 'D';
-    } else if (statusmahasiswa == "Mengundurkan Diri") {
-      status = 'K';
-    } else if (statusmahasiswa == "Meninggal") {
-      status = 'M';
-    } else if (statusmahasiswa == "Pendaftar") {
-      status = 'P';
-    } else if (statusmahasiswa == "Mahasiswa Baru") {
-      status = 'B';
-    }
-    print(status);
-    int nip = await SessionManager().get('nip');
-    String nipQuery = nip.toString();
-    var url = Uri.https('project.mis.pens.ac.id',
-        '/mis112/siapa/koordinator/api/content/rekapstatusmahasiswa.php');
-    var response = await http.post(url,
-        body: convert.jsonEncode({
-          'nip': nipQuery,
-          'STATUS_MAHASISWA': status,
-        }));
-    var jsonData = convert.jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      return jsonData['data'];
-    } else {
-      print('No Response');
-    }
-  }
+  // Future viewRekapStatusMahasiswa() async {
+  //   var status;
+  //   if (statusmahasiswa == "Mahasiswa Luar Negeri") {
+  //     status = 'E';
+  //   } else if (statusmahasiswa == "Tanpa Keterangan") {
+  //     status = 'T';
+  //   } else if (statusmahasiswa == "Aktif") {
+  //     status = 'A';
+  //   } else if (statusmahasiswa == "Lulus") {
+  //     status = 'L';
+  //   } else if (statusmahasiswa == "Cuti") {
+  //     status = 'C';
+  //   } else if (statusmahasiswa == "DO") {
+  //     status = 'D';
+  //   } else if (statusmahasiswa == "Mengundurkan Diri") {
+  //     status = 'K';
+  //   } else if (statusmahasiswa == "Meninggal") {
+  //     status = 'M';
+  //   } else if (statusmahasiswa == "Pendaftar") {
+  //     status = 'P';
+  //   } else if (statusmahasiswa == "Mahasiswa Baru") {
+  //     status = 'B';
+  //   }
+  //   print(status);
+  //   int nip = await SessionManager().get('nip');
+  //   String nipQuery = nip.toString();
+  //   var url = Uri.https('project.mis.pens.ac.id',
+  //       '/mis112/siapa/koordinator/api/content/rekapstatusmahasiswa.php');
+  //   var response = await http.post(url,
+  //       body: convert.jsonEncode({
+  //         'nip': nipQuery,
+  //         'STATUS_MAHASISWA': status,
+  //       }));
+  //   var jsonData = convert.jsonDecode(response.body);
+  //   if (response.statusCode == 200) {
+  //     return jsonData['data'];
+  //   } else {
+  //     print('No Response');
+  //   }
+  // }
 
-  Future viewRekapKodeKelas() async {
-    // var kode;
-    // if (kodekelas == "A") {
-    //   kode = 1;
-    // } else if (filterstatus == "Ditolak") {
-    //   status = 2;
-    // }
-    int nip = await SessionManager().get('nip');
-    String nipQuery = nip.toString();
-    var url = Uri.https('project.mis.pens.ac.id',
-        '/mis112/siapa/koordinator/api/content/rekapkodekelas.php');
-    var response = await http.post(url,
-        body: convert.jsonEncode({
-          'nip': nipQuery,
-          'PARALEL': kodekelas,
-        }));
-    var jsonData = convert.jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      return jsonData['data'];
-    } else {
-      print('No Response');
-    }
-  }
-
-  Future viewRekapNomorKelas() async {
-    int nip = await SessionManager().get('nip');
-    String nipQuery = nip.toString();
-    var url = Uri.https('project.mis.pens.ac.id',
-        '/mis112/siapa/koordinator/api/content/rekapnomorkelas.php');
-    var response = await http.post(url,
-        body: convert.jsonEncode({
-          'nip': nipQuery,
-          'KELAS': nomorkelas,
-        }));
-    var jsonData = convert.jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      return jsonData['data'];
-    } else {
-      print('No Response');
-    }
-  }
+  // Future viewRekapKodeKelas() async {
+  //   // var kode;
+  //   // if (kodekelas == "A") {
+  //   //   kode = 1;
+  //   // } else if (filterstatus == "Ditolak") {
+  //   //   status = 2;
+  //   // }
+  //   int nip = await SessionManager().get('nip');
+  //   String nipQuery = nip.toString();
+  //   var url = Uri.https('project.mis.pens.ac.id',
+  //       '/mis112/siapa/koordinator/api/content/rekapkodekelas.php');
+  //   var response = await http.post(url,
+  //       body: convert.jsonEncode({
+  //         'nip': nipQuery,
+  //         'PARALEL': kodekelas,
+  //       }));
+  //   var jsonData = convert.jsonDecode(response.body);
+  //   if (response.statusCode == 200) {
+  //     return jsonData['data'];
+  //   } else {
+  //     print('No Response');
+  //   }
+  // }
+  //
+  // Future viewRekapNomorKelas() async {
+  //   int nip = await SessionManager().get('nip');
+  //   String nipQuery = nip.toString();
+  //   var url = Uri.https('project.mis.pens.ac.id',
+  //       '/mis112/siapa/koordinator/api/content/rekapnomorkelas.php');
+  //   var response = await http.post(url,
+  //       body: convert.jsonEncode({
+  //         'nip': nipQuery,
+  //         'KELAS': nomorkelas,
+  //       }));
+  //   var jsonData = convert.jsonDecode(response.body);
+  //   if (response.statusCode == 200) {
+  //     return jsonData['data'];
+  //   } else {
+  //     print('No Response');
+  //   }
+  // }
 
   Future viewStatus() async {
     // int nrp = await SessionManager().get('NRP');
@@ -453,7 +454,8 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                       return const Center(child: CircularProgressIndicator());
                     } else {
                       // List<dynamic> value = snapshot.data;
-                      return SizedBox(
+                      return
+                        SizedBox(
                           child: ConstrainedBox(
                               constraints:
                               BoxConstraints(maxHeight: double.infinity),
@@ -462,11 +464,19 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                  itemCount: snapshot.data.length,
+                                  itemCount: snapshot.data!.length,
                                   itemBuilder: (BuildContext context, index) {
-                                    return snapshot.data[index]["NRP"]
-                                        .contains(query)
-                                        ? Card(
+                                    var stringContains = false;
+                                    if (snapshot.data[index] != null) {
+                                      var snapIndex = snapshot.data[index];
+                                      stringContains = snapIndex["NRP"]?.contains(query);
+                                    } else {
+                                      stringContains = false;
+                                    }
+                                    // return snapshot.data![index]["NRP"]!
+                                    //     .contains(query)
+                                    return stringContains
+                                        ? (snapshot.data != null) ? Card(
                                       margin: EdgeInsets.fromLTRB(
                                           26, 14, 26, 0),
                                       child: Container(
@@ -490,6 +500,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                     Color(0xFF578BB8),
                                                   ),
                                                 ),
+                                                // Text("${snapshot.data.length}"),
                                                 Container(
                                                   width: 266,
                                                   child: Column(
@@ -500,7 +511,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                             .topLeft,
                                                         child: Text(
                                                           "${snapshot
-                                                              .data[index]["NAMA"]}",
+                                                              .data![index]["NAMA"]}",
                                                           style: TextStyle(
                                                               fontSize:
                                                               14,
@@ -518,8 +529,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                         children: [
                                                           Container(
                                                             child: Text(
-                                                              "${snapshot
-                                                                  .data[index]["NRP"]}",
+                                                              "${snapshot .data![index]["NRP"]}",
                                                               style: TextStyle(
                                                                   fontSize:
                                                                   14,
@@ -532,7 +542,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                           ),
                                                           Container(
                                                             child: (snapshot
-                                                                .data[index]
+                                                                .data![index]
                                                             [
                                                             "STATUS"] ==
                                                                 '0')
@@ -547,11 +557,9 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                                       0xff20B726)),
                                                             )
                                                                 : (snapshot
-                                                                .data[index]["STATUS"] ==
+                                                                .data![index]["STATUS"] ==
                                                                 '1')
-                                                                ? ((snapshot
-                                                                .data[index]["AMBIL"] ==
-                                                                '1')
+                                                                ? (snapshot.data![index]["AMBIL"] == '1')
                                                                 ? Text(
                                                               "Diterima Sudah Diambil",
                                                               style: TextStyle(
@@ -573,9 +581,9 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                                 color: Color(
                                                                     0xff20B726),
                                                               ),
-                                                            ))
+                                                            )
                                                                 : (snapshot
-                                                                .data[index]["STATUS"] ==
+                                                                .data![index]["STATUS"] ==
                                                                 '2')
                                                                 ? Text(
                                                               "Ditolak",
@@ -589,7 +597,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                                               ),
                                                             )
                                                                 : (snapshot
-                                                                .data[index]["STATUS"] ==
+                                                                .data![index]["STATUS"] ==
                                                                 '3')
                                                                 ? Text(
                                                               "Pending",
@@ -624,7 +632,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                                           ),
                                         ),
                                       ),
-                                    )
+                                    ) : Container()
                                         : Container();
                                     // FutureBuilder<dynamic>(
                                   },
@@ -633,199 +641,8 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                     }
                   },
                 )
-                    : FutureBuilder<dynamic>(
-                  future: viewRekap(),
-                  builder: (context, snapshot) {
-                    if (snapshot.error != null) {
-                      return Text(
-                        "${snapshot.error}",
-                        style: const TextStyle(fontSize: 20),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else {
-                      // List<dynamic> value = snapshot.data;
-                      return SizedBox(
-                          child: ConstrainedBox(
-                              constraints:
-                              BoxConstraints(maxHeight: double.infinity),
-                              child: SingleChildScrollView(
-                                child: ListView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: snapshot.data.length,
-                                  itemBuilder: (BuildContext context, index) {
-                                    return snapshot.data[index]["NRP"]
-                                        .contains(query)
-                                        ? Card(
-                                      margin: EdgeInsets.fromLTRB(
-                                          26, 14, 26, 0),
-                                      child: Container(
-                                        width: MediaQueryWidth * 0.867,
-                                        constraints: BoxConstraints(
-                                            maxHeight: double.infinity),
-                                        child: SizedBox(
-                                          child: Container(
-                                            margin: EdgeInsets.all(20),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                              children: <Widget>[
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      right: 10),
-                                                  child: Icon(
-                                                    Icons
-                                                        .account_circle_outlined,
-                                                    color:
-                                                    Color(0xFF578BB8),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  width: 266,
-                                                  child: Column(
-                                                    children: [
-                                                      Container(
-                                                        alignment:
-                                                        Alignment
-                                                            .topLeft,
-                                                        child: Text(
-                                                          "${snapshot
-                                                              .data[index]["NAMA"]}",
-                                                          style: TextStyle(
-                                                              fontSize:
-                                                              14,
-                                                              fontWeight:
-                                                              FontWeight
-                                                                  .w600,
-                                                              letterSpacing:
-                                                              1),
-                                                        ),
-                                                      ),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                            child: Text(
-                                                              "${snapshot
-                                                                  .data[index]["NRP"]!}",
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                  14,
-                                                                  fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                                  letterSpacing:
-                                                                  1),
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            child: (snapshot
-                                                                .data[index]
-                                                            [
-                                                            "STATUS"] ==
-                                                                '0')
-                                                                ? Text(
-                                                              "Pengajuan Baru",
-                                                              style: TextStyle(
-                                                                  fontSize: 14,
-                                                                  fontWeight: FontWeight
-                                                                      .w600,
-                                                                  letterSpacing: 1,
-                                                                  color: Color(
-                                                                      0xff20B726)),
-                                                            )
-                                                                : (snapshot
-                                                                .data[index]["STATUS"] ==
-                                                                '1')
-                                                                ? ((snapshot
-                                                                .data[index]["AMBIL"] ==
-                                                                '1')
-                                                                ? Text(
-                                                              "Diterima Sudah Diambil",
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight
-                                                                    .w600,
-                                                                letterSpacing: 1,
-                                                                color: Color(
-                                                                    0xff20B726),
-                                                              ),
-                                                            )
-                                                                : Text(
-                                                              "Diterima Belum Diambil",
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight
-                                                                    .w600,
-                                                                letterSpacing: 1,
-                                                                color: Color(
-                                                                    0xff20B726),
-                                                              ),
-                                                            ))
-                                                                : (snapshot
-                                                                .data[index]["STATUS"] ==
-                                                                '2')
-                                                                ? Text(
-                                                              "Ditolak",
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight
-                                                                    .w600,
-                                                                letterSpacing: 1,
-                                                                color: Color(
-                                                                    0xff20B726),
-                                                              ),
-                                                            )
-                                                                : (snapshot
-                                                                .data[index]["STATUS"] ==
-                                                                '3')
-                                                                ? Text(
-                                                              "Pending",
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight
-                                                                    .w600,
-                                                                letterSpacing: 1,
-                                                                color: Color(
-                                                                    0xff20B726),
-                                                              ),
-                                                            )
-                                                                : Text(
-                                                              "Belum Pengajuan Judul",
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight: FontWeight
-                                                                    .w600,
-                                                                letterSpacing: 1,
-                                                                color: Color(
-                                                                    0xff20B726),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                        : Container();
-                                    // FutureBuilder<dynamic>(
-                                  },
-                                ),
-                              )));
-                    }
-                  },
-                )
+                    :
+                Container()
 
               ],
             ),

@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:siapa/mahasiswa/judul.dart';
-import 'package:siapa/login/login.dart';
-import 'package:siapa/mahasiswa/penawarantopik.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:siapa/koordinator/judulmahasiswa.dart';
+import 'package:siapa/login/loginkoordinator.dart';
 
-class JudulOrangLain extends StatefulWidget {
-  const JudulOrangLain({Key? key}) : super(key: key);
+class RekapDosen extends StatefulWidget {
+  const RekapDosen({Key? key}) : super(key: key);
 
   @override
-  State<JudulOrangLain> createState() => _JudulOrangLainState();
+  State<RekapDosen> createState() => _RekapDosenState();
 }
+TextEditingController searchnama = TextEditingController();
+String query = "";
 
-Future viewJudulOrangLain() async {
+Future rekapDosen() async {
   // try {
-  int nrp = await SessionManager().get('nrp');
-  String nrpQuery = nrp.toString();
+  int nip = await SessionManager().get('nip');
+  String nipQuery = nip.toString();
   var url = Uri.https(
       'project.mis.pens.ac.id',
-      '/mis112/siapa/mahasiswa/api/content/juduloranglain.php/',
-      {'nrp': nrpQuery});
+      '/mis112/siapa/koordinator/api/content/dosenjumlah.php/',
+      {'nip': nipQuery});
 
   var response = await http.get(url);
   var jsonData = convert.jsonDecode(response.body);
@@ -37,15 +38,17 @@ Future viewJudulOrangLain() async {
   // }
 }
 
-class _JudulOrangLainState extends State<JudulOrangLain> {
+class _RekapDosenState extends State<RekapDosen> {
   @override
   Widget build(BuildContext context) {
+    final MediaQueryHeight = MediaQuery.of(context).size.height;
+    final MediaQueryWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         title: const Text(
-          "Judul",
+          "Rekap Dosen",
           style: TextStyle(
               color: Color(0xFF578BB8),
               fontSize: 20,
@@ -96,12 +99,25 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return const Judul();
-                }));
+                      return const JudulMahasiswa();
+                    }));
               },
               leading: const Icon(Icons.title),
               title: const Text(
                 "Judul Mahasiswa",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                      return const RekapDosen();
+                    }));
+              },
+              leading: const Icon(Icons.title),
+              title: const Text(
+                "Rekap Dosen",
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -112,8 +128,8 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                   onTap: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                      return const Login();
-                    }));
+                          return const LoginKoordinator();
+                        }));
                   },
                   leading: const Icon(Icons.logout),
                   title: const Text(
@@ -134,69 +150,33 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
           Container(
             child: Column(
               children: [
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        width: 141,
-                        height: 36,
-                        margin: const EdgeInsets.fromLTRB(26, 0, 26, 0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color(0xffffffff)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            )),
-                          ),
-                          child: const Text(
-                            "Judul Anda",
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black),
-                          ),
-                          onPressed: () {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return const Judul();
-                            }));
-                          },
-                        ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 14),
+                  width: MediaQueryWidth * 0.867,
+                  height: MediaQueryHeight * 0.052,
+                  child: TextField(
+                    controller: searchnama,
+                    decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: false,
+                      prefixIcon: const Icon(Icons.search_outlined),
+                      hintText: "Cari Nama Dosen (Huruf Kecil)",
+                      hintStyle:
+                      const TextStyle(fontSize: 12, letterSpacing: 0.5),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      Container(
-                        width: 141,
-                        height: 36,
-                        margin: const EdgeInsets.fromLTRB(0, 0, 26, 0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color(0xff578BB8)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            )),
-                          ),
-                          child: const Text(
-                            "Judul Orang Lain",
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600),
-                          ),
-                          onPressed: () {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return const JudulOrangLain();
-                            }));
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        query = value;
+                        // viewJudulMahasiswa(value);
+                      });
+                    },
                   ),
                 ),
                 FutureBuilder<dynamic>(
-                  future: viewJudulOrangLain(),
+                  future: rekapDosen(),
                   builder: (context, snapshot) {
                     if (snapshot.error != null) {
                       return Text(
@@ -215,10 +195,12 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                           shrinkWrap: true,
                           itemCount: snapshot.data.length,
                           itemBuilder: (BuildContext context, index) {
-                            return Container(
+                            return snapshot.data[index]["NAMA_LC"]
+                                .contains(query) ?
+                              Container(
                               child: Card(
                                 margin:
-                                    const EdgeInsets.fromLTRB(26, 14, 26, 0),
+                                const EdgeInsets.fromLTRB(26, 14, 26, 0),
                                 child: SizedBox(
                                   width: 340,
                                   height: 134,
@@ -228,12 +210,12 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                       children: [
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                           children: <Widget>[
                                             Container(
                                               width: 300,
                                               child: Text(
-                                                "${snapshot.data[index]["JUDUL"]}",
+                                                "${snapshot.data[index]["NAMA"]}",
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
@@ -261,15 +243,15 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                           alignment: Alignment.topLeft,
                                           child: Text(
                                             // "Pembimbing ${snapshot.data[index]} : ${snapshot.data.dosen[index]["NAMA"]}",
-                                            "Pembimbing 1 : ${snapshot.data[index]["BIMBING1"]}",
+                                            "Pembimbing 1 : ${snapshot.data[index]["DOSEN1"]}",
                                             style:
-                                                TextStyle(color: Colors.black),
+                                            TextStyle(color: Colors.black),
                                           ),
                                         ),
                                         Container(
                                           alignment: Alignment.topLeft,
                                           child: Text(
-                                            "Pembimbing 2 : ${snapshot.data[index]["BIMBING2"]}",
+                                            "Pembimbing 2 : ${snapshot.data[index]["DOSEN2"]}",
                                             style: TextStyle(
                                                 color: Colors.black
                                                     .withOpacity(0.5)),
@@ -278,7 +260,7 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                         Container(
                                           alignment: Alignment.topLeft,
                                           child: Text(
-                                            "Pembimbing 3 : ${snapshot.data[index]["BIMBING3"]}",
+                                            "Pembimbing 3 : ${snapshot.data[index]["DOSEN3"]}",
                                             style: TextStyle(
                                                 color: Colors.black
                                                     .withOpacity(0.5)),
@@ -289,7 +271,7 @@ class _JudulOrangLainState extends State<JudulOrangLain> {
                                   ),
                                 ),
                               ),
-                            );
+                            ) : Container();
                           },
                         ),
                       );

@@ -3,6 +3,7 @@ import 'package:siapa/dosen/penawaranjudul.dart';
 import 'package:siapa/koordinator/detailjudulmahasiswa.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:siapa/koordinator/penawaranjudulkoor.dart';
+import 'package:siapa/koordinator/rekapdosen.dart';
 import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
 import 'package:siapa/login/login.dart';
@@ -160,7 +161,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       title: const Text(
-        "Judul Mahasiswa Diterima",
+        "Judul Mahasiswa",
         style: const TextStyle(
             color: Color(0xFF578BB8),
             fontSize: 20,
@@ -269,12 +270,12 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return const PenawaranJudulKoor();
+                  return const RekapDosen();
                 }));
               },
               leading: const Icon(Icons.topic_outlined),
               title: const Text(
-                "Penawaran Topik",
+                "Rekap Dosen",
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -317,7 +318,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                       fillColor: Colors.white,
                       filled: false,
                       prefixIcon: const Icon(Icons.search_outlined),
-                      hintText: "Cari NRP Mahasiswa",
+                      hintText: "Cari NRP/Judul",
                       hintStyle:
                           const TextStyle(fontSize: 12, letterSpacing: 0.5),
                       border: OutlineInputBorder(
@@ -418,8 +419,9 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                 shrinkWrap: true,
                                 itemCount: snapshot.data.length,
                                 itemBuilder: (BuildContext context, index) {
-                                  return snapshot.data[index]["NRP"]
-                                          .contains(query)
+                                  return snapshot.data[index]["JUDUL_LC"]
+                                      .contains(query) || snapshot.data[index]["NRP"]
+                                      .contains(query)
                                       ? Card(
                                           margin: const EdgeInsets.fromLTRB(
                                               26, 14, 26, 0),
@@ -598,9 +600,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                             ),
                                           ),
                                         )
-                                      : Center(
-                                          child: Text("NRP Salah"),
-                                        );
+                                      : Container();
                                 },
                               ),
                             );
@@ -629,7 +629,8 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                           shrinkWrap: true,
                           itemCount: snapshot.data.length,
                           itemBuilder: (BuildContext context, index) {
-                            return snapshot.data[index]["NRP"]
+                            return snapshot.data[index]["JUDUL_LC"]
+                                .contains(query) || snapshot.data[index]["NRP"]
                                 .contains(query)
                                 ? Card(
                               margin: const EdgeInsets.fromLTRB(
@@ -809,9 +810,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                 ),
                               ),
                             )
-                                : Center(
-                              child: Text("NRP Salah"),
-                            );
+                                : Container();
                           },
                         ),
                       );
@@ -839,8 +838,9 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                 shrinkWrap: true,
                                 itemCount: snapshot.data.length,
                                 itemBuilder: (BuildContext context, index) {
-                                  return snapshot.data[index]["NRP"]
-                                          .contains(query)
+                                  return snapshot.data[index]["JUDUL_LC"]
+                                          .contains(query) || snapshot.data[index]["NRP"]
+                                      .contains(query)
                                       ? Card(
                                           margin: const EdgeInsets.fromLTRB(
                                               26, 14, 26, 0),
@@ -1019,9 +1019,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                             ),
                                           ),
                                         )
-                                      : Center(
-                                          child: Text("NRP Salah"),
-                                        );
+                                      : Container();
                                 },
                               ),
                             );
