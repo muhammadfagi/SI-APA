@@ -3,6 +3,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:siapa/login/pilihlogin.dart';
+import 'package:siapa/mahasiswa/detailjuduldiluartanggal.dart';
 import 'package:siapa/mahasiswa/juduloranglain.dart';
 import 'package:siapa/login/login.dart';
 import 'package:siapa/mahasiswa/detailjudul.dart';
@@ -927,7 +928,7 @@ class _JudulState extends State<Judul> {
                                                                               IconButton(
                                                                                 onPressed: () {
                                                                                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                                                                    return DetailJudul(nomor: "${snapshot.data[index]["NOMOR"]}");
+                                                                                    return DetailJudulLuarTanggal(nomor: "${snapshot.data[index]["NOMOR"]}");
                                                                                   }));
                                                                                 },
                                                                                 icon: const Icon(Icons.arrow_forward_ios_outlined),

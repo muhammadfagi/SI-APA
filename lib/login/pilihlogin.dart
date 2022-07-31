@@ -75,7 +75,7 @@ class _PilihLoginState extends State<PilihLogin> {
                         )),
                       ),
                       child: Text(
-                        "Login Koordinator",
+                        "Login Dosen & Koordinator",
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {

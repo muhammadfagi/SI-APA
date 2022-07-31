@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:intl/intl.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
+import 'package:siapa/koordinator/rekapdosen.dart';
 import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
 import 'package:siapa/login/login.dart';
+import 'package:siapa/login/pilihlogin.dart';
 import '../models/jurusan.dart';
 import '../models/program.dart';
 import 'package:http/http.dart' as http;
@@ -107,63 +109,63 @@ class _TanggalState extends State<Tanggal> {
             children: [
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 height: 150,
-                color: Color(0xFF578BB8),
+                color: const Color(0xFF578BB8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      alignment: Alignment.bottomLeft,
-                      child: Icon(
-                        Icons.account_circle_outlined,
-                        color: Colors.white,
-                        size: 50,
-                      ),
-                    ),
+                      // margin: EdgeInsets.only(bottom: 10.0),
+                        alignment: Alignment.bottomLeft,
+                        child: const Icon(
+                          Icons.account_circle_outlined,
+                          color: Colors.white,
+                          size: 50,
+                        )),
                     Container(
-                      margin: EdgeInsets.only(top: 10.0),
+                      margin: const EdgeInsets.only(top: 10.0),
                       alignment: Alignment.bottomLeft,
-                      child: Text(
+                      child: const Text(
                         "Muhammad Fagi",
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
                     Container(
                       alignment: Alignment.bottomLeft,
-                      child: Text(
+                      child: const Text(
                         "2103191020",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               ListTile(
                 onTap: () {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
-                    return Tanggal();
-                  }));
+                        return const Tanggal();
+                      }));
                 },
-                leading: Icon(Icons.calendar_today_outlined),
-                title: Text(
+                leading: const Icon(Icons.calendar_today_outlined),
+                title: const Text(
                   "Setting Tanggal",
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
               ListTile(
                 onTap: () {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
-                    return JudulMahasiswa();
-                  }));
+                        return const JudulMahasiswa();
+                      }));
                 },
-                leading: Icon(Icons.title),
-                title: Text(
+                leading: const Icon(Icons.title),
+                title: const Text(
                   "Judul Mahasiswa",
                   style: TextStyle(fontSize: 20),
                 ),
@@ -172,12 +174,25 @@ class _TanggalState extends State<Tanggal> {
                 onTap: () {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
-                    return RekapStatusDiambil();
-                  }));
+                        return const RekapStatusDiambil();
+                      }));
                 },
-                leading: Icon(Icons.view_list_outlined),
-                title: Text(
+                leading: const Icon(Icons.view_list_outlined),
+                title: const Text(
                   "Rekap Status Diambil",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                        return const RekapDosen();
+                      }));
+                },
+                leading: const Icon(Icons.topic_outlined),
+                title: const Text(
+                  "Rekap Dosen",
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -188,18 +203,18 @@ class _TanggalState extends State<Tanggal> {
                     onTap: () {
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) {
-                        return Login();
-                      }));
+                            return const PilihLogin();
+                          }));
                     },
-                    leading: Icon(Icons.logout),
-                    title: Text(
+                    leading: const Icon(Icons.logout),
+                    title: const Text(
                       "Logout",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               )
             ],

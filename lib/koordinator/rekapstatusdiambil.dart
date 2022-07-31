@@ -2,15 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
+import 'package:siapa/koordinator/rekapdosen.dart';
 import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/koordinator/rekapstatusdiambil.dart';
 import 'package:siapa/login/login.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
+import 'package:siapa/login/pilihlogin.dart';
 import 'dart:convert' as convert;
 import 'dart:async';
 import '../models/tahun.dart';
 import '../models/statusmahasiswa.dart';
+import '../models/program.dart';
 
 class RekapStatusDiambil extends StatefulWidget {
   const RekapStatusDiambil({Key? key}) : super(key: key);
@@ -26,6 +29,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
   String? nomorkelas;
   String? tahun;
   String? statusmahasiswa;
+  String? programpilih;
 
   Future viewRekap() async {
     int nip = await SessionManager().get('nip');
@@ -78,6 +82,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
           'STATUS_MAHASISWA': status,
           'PARAREL' : kodekelas,
           'KELAS' : nomorkelas,
+          'PROGRAM' : programpilih,
         }));
     var jsonData = convert.jsonDecode(response.body);
     // print(jsonData['data']);
@@ -87,89 +92,6 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
       print('No Response');
     }
   }
-
-  // Future viewRekapStatusMahasiswa() async {
-  //   var status;
-  //   if (statusmahasiswa == "Mahasiswa Luar Negeri") {
-  //     status = 'E';
-  //   } else if (statusmahasiswa == "Tanpa Keterangan") {
-  //     status = 'T';
-  //   } else if (statusmahasiswa == "Aktif") {
-  //     status = 'A';
-  //   } else if (statusmahasiswa == "Lulus") {
-  //     status = 'L';
-  //   } else if (statusmahasiswa == "Cuti") {
-  //     status = 'C';
-  //   } else if (statusmahasiswa == "DO") {
-  //     status = 'D';
-  //   } else if (statusmahasiswa == "Mengundurkan Diri") {
-  //     status = 'K';
-  //   } else if (statusmahasiswa == "Meninggal") {
-  //     status = 'M';
-  //   } else if (statusmahasiswa == "Pendaftar") {
-  //     status = 'P';
-  //   } else if (statusmahasiswa == "Mahasiswa Baru") {
-  //     status = 'B';
-  //   }
-  //   print(status);
-  //   int nip = await SessionManager().get('nip');
-  //   String nipQuery = nip.toString();
-  //   var url = Uri.https('project.mis.pens.ac.id',
-  //       '/mis112/siapa/koordinator/api/content/rekapstatusmahasiswa.php');
-  //   var response = await http.post(url,
-  //       body: convert.jsonEncode({
-  //         'nip': nipQuery,
-  //         'STATUS_MAHASISWA': status,
-  //       }));
-  //   var jsonData = convert.jsonDecode(response.body);
-  //   if (response.statusCode == 200) {
-  //     return jsonData['data'];
-  //   } else {
-  //     print('No Response');
-  //   }
-  // }
-
-  // Future viewRekapKodeKelas() async {
-  //   // var kode;
-  //   // if (kodekelas == "A") {
-  //   //   kode = 1;
-  //   // } else if (filterstatus == "Ditolak") {
-  //   //   status = 2;
-  //   // }
-  //   int nip = await SessionManager().get('nip');
-  //   String nipQuery = nip.toString();
-  //   var url = Uri.https('project.mis.pens.ac.id',
-  //       '/mis112/siapa/koordinator/api/content/rekapkodekelas.php');
-  //   var response = await http.post(url,
-  //       body: convert.jsonEncode({
-  //         'nip': nipQuery,
-  //         'PARALEL': kodekelas,
-  //       }));
-  //   var jsonData = convert.jsonDecode(response.body);
-  //   if (response.statusCode == 200) {
-  //     return jsonData['data'];
-  //   } else {
-  //     print('No Response');
-  //   }
-  // }
-  //
-  // Future viewRekapNomorKelas() async {
-  //   int nip = await SessionManager().get('nip');
-  //   String nipQuery = nip.toString();
-  //   var url = Uri.https('project.mis.pens.ac.id',
-  //       '/mis112/siapa/koordinator/api/content/rekapnomorkelas.php');
-  //   var response = await http.post(url,
-  //       body: convert.jsonEncode({
-  //         'nip': nipQuery,
-  //         'KELAS': nomorkelas,
-  //       }));
-  //   var jsonData = convert.jsonDecode(response.body);
-  //   if (response.statusCode == 200) {
-  //     return jsonData['data'];
-  //   } else {
-  //     print('No Response');
-  //   }
-  // }
 
   Future viewStatus() async {
     // int nrp = await SessionManager().get('NRP');
@@ -226,63 +148,63 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
           children: [
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               height: 150,
-              color: Color(0xFF578BB8),
+              color: const Color(0xFF578BB8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
-                    alignment: Alignment.bottomLeft,
-                    child: Icon(
-                      Icons.account_circle_outlined,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                  ),
+                    // margin: EdgeInsets.only(bottom: 10.0),
+                      alignment: Alignment.bottomLeft,
+                      child: const Icon(
+                        Icons.account_circle_outlined,
+                        color: Colors.white,
+                        size: 50,
+                      )),
                   Container(
-                    margin: EdgeInsets.only(top: 10.0),
+                    margin: const EdgeInsets.only(top: 10.0),
                     alignment: Alignment.bottomLeft,
-                    child: Text(
+                    child: const Text(
                       "Muhammad Fagi",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
+                    child: const Text(
                       "2103191020",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                      return Tanggal();
+                      return const Tanggal();
                     }));
               },
-              leading: Icon(Icons.calendar_today_outlined),
-              title: Text(
+              leading: const Icon(Icons.calendar_today_outlined),
+              title: const Text(
                 "Setting Tanggal",
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
             ),
             ListTile(
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                      return JudulMahasiswa();
+                      return const JudulMahasiswa();
                     }));
               },
-              leading: Icon(Icons.title),
-              title: Text(
+              leading: const Icon(Icons.title),
+              title: const Text(
                 "Judul Mahasiswa",
                 style: TextStyle(fontSize: 20),
               ),
@@ -291,12 +213,25 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                      return RekapStatusDiambil();
+                      return const RekapStatusDiambil();
                     }));
               },
-              leading: Icon(Icons.view_list_outlined),
-              title: Text(
+              leading: const Icon(Icons.view_list_outlined),
+              title: const Text(
                 "Rekap Status Diambil",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                      return const RekapDosen();
+                    }));
+              },
+              leading: const Icon(Icons.topic_outlined),
+              title: const Text(
+                "Rekap Dosen",
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -307,18 +242,18 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                   onTap: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                          return Login();
+                          return const PilihLogin();
                         }));
                   },
-                  leading: Icon(Icons.logout),
-                  title: Text(
+                  leading: const Icon(Icons.logout),
+                  title: const Text(
                     "Logout",
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             )
           ],
@@ -356,7 +291,6 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                 ),
                 Column(
                   children: [
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -407,6 +341,44 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                         onChanged: (valuestatus) => statusmahasiswa = valuestatus,
                       ),
                     ),
+                    Container(
+                      height: 40.0,
+                      width: 110.0,
+                      child: DropdownSearch<Program>(
+                        mode: Mode.MENU,
+                        // showSearchBox: true,
+                        hint: "Pilih Dosen",
+                        onChanged: (value) => programpilih = value?.nomor,
+                        dropdownBuilder: (context, selectedItem) => Text(
+                            selectedItem?.program ?? "Pilih Program"),
+                        popupItemBuilder: (context, item, isSelected) =>
+                            ListTile(
+                              title: Text(item.program),
+                            ),
+                        onFind: (text) async {
+                          int nip = await SessionManager().get('nip');
+                          String nipQuery = nip.toString();
+                          var url = Uri.https('project.mis.pens.ac.id',
+                              '/mis112/siapa/koordinator/api/content/getprogram.php/', {'nip' : nipQuery});
+                          var response = await http.get(url);
+                          if (response.statusCode == 200) {
+                            List namadosen =
+                            (convert.jsonDecode(response.body)
+                            as Map<String, dynamic>)['data'];
+                            print(namadosen);
+                            List<Program> dosen = [];
+                            namadosen.forEach((element) {
+                              dosen.add(Program(
+                                  nomor: element["NOMOR"],
+                                  program: element["PROGRAM"],));
+                            });
+                            return dosen;
+                          } else {
+                            return [];
+                          }
+                        },
+                      ),
+                    ),
                   ],
                 ),
                     Container(
@@ -440,7 +412,7 @@ class _RekapStatusDiambilState extends State<RekapStatusDiambil> {
                 // Text("$statusmahasiswa"),
                 // Text("$nomorkelas"),
                 // Text("$kodekelas"),
-                (statusmahasiswa != null && kodekelas != null && nomorkelas != null)
+                (statusmahasiswa != null && kodekelas != null && nomorkelas != null && programpilih != null)
                     ? FutureBuilder<dynamic>(
                   future: viewRekapFilter(),
                   builder: (context, snapshot) {

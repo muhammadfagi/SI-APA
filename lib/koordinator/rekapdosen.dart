@@ -4,7 +4,10 @@ import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
+import 'package:siapa/koordinator/rekapstatusdiambil.dart';
+import 'package:siapa/koordinator/tanggal.dart';
 import 'package:siapa/login/loginkoordinator.dart';
+import 'package:siapa/login/pilihlogin.dart';
 
 class RekapDosen extends StatefulWidget {
   const RekapDosen({Key? key}) : super(key: key);
@@ -68,14 +71,15 @@ class _RekapDosenState extends State<RekapDosen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
-                    alignment: Alignment.bottomLeft,
-                    child: const Icon(
-                      Icons.account_circle_outlined,
-                      color: Colors.white,
-                      size: 55,
-                    ),
-                  ),
+                    // margin: EdgeInsets.only(bottom: 10.0),
+                      alignment: Alignment.bottomLeft,
+                      child: const Icon(
+                        Icons.account_circle_outlined,
+                        color: Colors.white,
+                        size: 50,
+                      )),
                   Container(
+                    margin: const EdgeInsets.only(top: 10.0),
                     alignment: Alignment.bottomLeft,
                     child: const Text(
                       "Muhammad Fagi",
@@ -86,7 +90,7 @@ class _RekapDosenState extends State<RekapDosen> {
                     alignment: Alignment.bottomLeft,
                     child: const Text(
                       "2103191020",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ],
@@ -94,6 +98,19 @@ class _RekapDosenState extends State<RekapDosen> {
             ),
             const SizedBox(
               height: 10,
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                      return const Tanggal();
+                    }));
+              },
+              leading: const Icon(Icons.calendar_today_outlined),
+              title: const Text(
+                "Setting Tanggal",
+                style: const TextStyle(fontSize: 20),
+              ),
             ),
             ListTile(
               onTap: () {
@@ -112,10 +129,23 @@ class _RekapDosenState extends State<RekapDosen> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
+                      return const RekapStatusDiambil();
+                    }));
+              },
+              leading: const Icon(Icons.view_list_outlined),
+              title: const Text(
+                "Rekap Status Diambil",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
                       return const RekapDosen();
                     }));
               },
-              leading: const Icon(Icons.title),
+              leading: const Icon(Icons.topic_outlined),
               title: const Text(
                 "Rekap Dosen",
                 style: TextStyle(fontSize: 20),
@@ -128,7 +158,7 @@ class _RekapDosenState extends State<RekapDosen> {
                   onTap: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                          return const LoginKoordinator();
+                          return const PilihLogin();
                         }));
                   },
                   leading: const Icon(Icons.logout),

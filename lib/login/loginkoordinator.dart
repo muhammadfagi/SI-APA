@@ -1,6 +1,7 @@
 import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:siapa/dosen/judulmahasiswabimbing.dart';
 import 'package:siapa/koordinator/judulmahasiswa.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_session_manager/flutter_session_manager.dart';
@@ -39,20 +40,22 @@ class _LoginKoordinatorState extends State<LoginKoordinator> {
         print(dataUser);
         await SessionManager().set('nip', dataUser["NIP"]);
         Navigator.push(context, MaterialPageRoute(builder: (_) => const JudulMahasiswa()));
-      } else {
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('Login Gagal!'),
-            content: const Text('Periksa Email dan Password Anda'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Ok'),
-                child: const Text('Ok'),
-              ),
-            ],
-          ),
-        );
+      }
+      else {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const JudulMahasiswaBimbing()));
+        // showDialog<String>(
+        //   context: context,
+        //   builder: (BuildContext context) => AlertDialog(
+        //     title: const Text('Login Gagal!'),
+        //     content: const Text('Periksa Email dan Password Anda'),
+        //     actions: <Widget>[
+        //       TextButton(
+        //         onPressed: () => Navigator.pop(context, 'Ok'),
+        //         child: const Text('Ok'),
+        //       ),
+        //     ],
+        //   ),
+        // );
       }
       return true;
     } else {
@@ -94,7 +97,7 @@ class _LoginKoordinatorState extends State<LoginKoordinator> {
                     margin: EdgeInsets.fromLTRB(0, 150, 0, 30),
                     child: Center(
                       child: Text(
-                        "LOGIN KOORDINATOR",
+                        "LOGIN DOSEN & KOORDINATOR",
                         style: TextStyle(
                             fontSize: 35,
                             fontWeight: FontWeight.bold,

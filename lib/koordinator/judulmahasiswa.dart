@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:siapa/dosen/judulmahasiswabimbing.dart';
 import 'package:siapa/dosen/penawaranjudul.dart';
 import 'package:siapa/koordinator/detailjudulmahasiswa.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -27,6 +28,7 @@ class JudulMahasiswa extends StatefulWidget {
 }
 
 class _JudulMahasiswaState extends State<JudulMahasiswa> {
+  String? programpilih;
   String? nomordosen1;
   String? nomordosen2;
   String? nomordosen3;
@@ -76,6 +78,8 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
       status = 2;
     } else if (filterstatus == "Pending") {
       status = 3;
+    } else if(filterstatus == "Semua") {
+      status = null;
     }
     int nip = await SessionManager().get('nip');
     String nipQuery = nip.toString();
@@ -103,6 +107,53 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
         body: convert.jsonEncode({
           'nip': nipQuery,
           'TAHUN': tahun,
+        }));
+    var jsonData = convert.jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
+  }
+
+  Future viewJudulMahasiswaFilter() async {
+    var status;
+    if (filterstatus == "Diterima") {
+      status = 1;
+    } else if (filterstatus == "Ditolak") {
+      status = 2;
+    } else if (filterstatus == "Pending") {
+      status = 3;
+    }
+    int nip = await SessionManager().get('nip');
+    String nipQuery = nip.toString();
+    var url = Uri.https('project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/judulmahasiswafilter.php');
+    var response = await http.post(url,
+        body: convert.jsonEncode({
+          'nip': nipQuery,
+          'TAHUN': tahun,
+          'STATUS' : status,
+          'PROGRAM' : programpilih,
+        }));
+    var jsonData = convert.jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return jsonData['data'];
+    } else {
+      print('No Response');
+    }
+  }
+
+  Future viewJudulMahasiswaFilterNoStatus() async {
+    int nip = await SessionManager().get('nip');
+    String nipQuery = nip.toString();
+    var url = Uri.https('project.mis.pens.ac.id',
+        '/mis112/siapa/koordinator/api/content/judulmahasiswafilternostatus.php');
+    var response = await http.post(url,
+        body: convert.jsonEncode({
+          'nip': nipQuery,
+          'TAHUN': tahun,
+          'PROGRAM' : programpilih,
         }));
     var jsonData = convert.jsonDecode(response.body);
     if (response.statusCode == 200) {
@@ -279,6 +330,19 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                 style: TextStyle(fontSize: 20),
               ),
             ),
+            ListTile(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                      return const JudulMahasiswaBimbing();
+                    }));
+              },
+              leading: const Icon(Icons.topic_outlined),
+              title: const Text(
+                "Judul Mahasiswa Dibimbing",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomLeft,
@@ -337,32 +401,32 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                      width: MediaQueryWidth * 0.360,
+                      width: MediaQueryWidth * 0.300,
                       height: MediaQueryHeight * 0.050,
                       child: DropdownSearch<String>(
                         mode: Mode.MENU,
                         items: ["Diterima", "Ditolak", "Pending"],
                         hint: "Pilih Status",
-                        onChanged: (valuestatus) {
-                          setState(() {
-                            filterstatus = valuestatus;
-                          });
-                        },
+                        onChanged: (valuestatus) =>
+                          // setState(() {
+                            filterstatus = valuestatus,
+                          // });
+                        // },
                       ),
                     ),
                     Container(
                       height: 40.0,
-                      width: 145.0,
+                      width: 105.0,
                       child: DropdownSearch<Tahun>(
                         mode: Mode.MENU,
                         // showSearchBox: true,
                         // searchBoxController: dosbing3,
                         hint: "Pilih Dosen",
-                        onChanged: (value) {
-                          setState(() {
-                            tahun = value?.tahun;
-                          });
-                        },
+                        onChanged: (value) =>
+                          // setState(() {
+                            tahun = value?.tahun,
+                          // });
+
                         dropdownBuilder: (context, selectedItem) =>
                             Text(selectedItem?.tahun ?? "Pilih Tahun"),
                         popupItemBuilder: (context, item, isSelected) =>
@@ -394,12 +458,82 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                         },
                       ),
                     ),
+                    Container(
+                      height: 40.0,
+                      width: 110.0,
+                      child: DropdownSearch<Program>(
+                        mode: Mode.MENU,
+                        // showSearchBox: true,
+                        hint: "Pilih Dosen",
+                        onChanged: (value) => programpilih = value?.nomor,
+                        dropdownBuilder: (context, selectedItem) => Text(
+                            selectedItem?.program ?? "Program"),
+                        popupItemBuilder: (context, item, isSelected) =>
+                            ListTile(
+                              title: Text(item.program),
+                            ),
+                        onFind: (text) async {
+                          int nip = await SessionManager().get('nip');
+                          String nipQuery = nip.toString();
+                          var url = Uri.https('project.mis.pens.ac.id',
+                              '/mis112/siapa/koordinator/api/content/getprogram.php/', {'nip' : nipQuery});
+                          var response = await http.get(url);
+                          if (response.statusCode == 200) {
+                            List namadosen =
+                            (convert.jsonDecode(response.body)
+                            as Map<String, dynamic>)['data'];
+                            print(namadosen);
+                            List<Program> dosen = [];
+                            namadosen.forEach((element) {
+                              dosen.add(Program(
+                                nomor: element["NOMOR"],
+                                program: element["PROGRAM"],));
+                            });
+                            return dosen;
+                          } else {
+                            return [];
+                          }
+                        },
+                      ),
+                    ),
                   ],
                 ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 14, 0, 0),
+                  height: 30.0,
+                  width: 75.0,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Color(0xff578BB8)),
+                      shape:
+                      MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                    ),
+                    child: Text(
+                      "Cari",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    onPressed: () {
+                      if(filterstatus == null) {
+                        setState(() {
+                          viewJudulMahasiswaFilterNoStatus();
+                        });
+                      }else {
+                        setState(() {
+                          viewJudulMahasiswaFilter();
+                        });
+                        // _loginKoordinator();
+                      }
+                    },
+                  ),
+                ),
                 // Text("$tahun"),
-                (filterstatus != null)
+                (filterstatus != null && programpilih != null && tahun != null)
                     ? FutureBuilder<dynamic>(
-                        future: viewJudulMahasiswaStatus(),
+                        future: viewJudulMahasiswaFilter(),
                         builder: (context, snapshot) {
                           if (snapshot.error != null) {
                             return Text(
@@ -607,9 +741,9 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                           }
                         },
                       )
-                    : (tahun != null)
-                    ?  FutureBuilder<dynamic>(
-                  future: viewJudulMahasiswaTahun(),
+                    : (filterstatus == null && programpilih !=null && tahun != null) ?
+                FutureBuilder<dynamic>(
+                  future: viewJudulMahasiswaFilterNoStatus(),
                   builder: (context, snapshot) {
                     if (snapshot.error != null) {
                       return Text(
@@ -775,8 +909,8 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                                                       : ("${snapshot.data[index]["STATUS"]}" ==
                                                       '2')
                                                       ? "Ditolak"
-                                                      : ("${snapshot.data[index]["STATUS"]}" ==
-                                                      '3') ? "Pending" : "Pilih Status",
+                                                      : ("${snapshot.data[index]["STATUS"]}" == '3')
+                                                      ? "Pending" : "Pilih Status",
                                                   // valuestatus = value,
                                                   onChanged: (value) =>
                                                       setStatus(
@@ -817,215 +951,7 @@ class _JudulMahasiswaState extends State<JudulMahasiswa> {
                     }
                   },
                 )
-                    :  FutureBuilder<dynamic>(
-                        future: viewJudulMahasiswa(),
-                        builder: (context, snapshot) {
-                          if (snapshot.error != null) {
-                            return Text(
-                              "${snapshot.error}",
-                              style: const TextStyle(fontSize: 20),
-                            );
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else {
-                            return Container(
-                              child: ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: snapshot.data.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  return snapshot.data[index]["JUDUL_LC"]
-                                          .contains(query) || snapshot.data[index]["NRP"]
-                                      .contains(query)
-                                      ? Card(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              26, 14, 26, 0),
-                                          child: Container(
-                                            width: MediaQueryWidth * 0.867,
-                                            constraints: const BoxConstraints(
-                                                maxHeight: double.infinity),
-                                            child: SizedBox(
-                                              child: Container(
-                                                margin:
-                                                    const EdgeInsets.all(20),
-                                                constraints:
-                                                    const BoxConstraints(
-                                                        maxHeight:
-                                                            double.infinity),
-                                                child: Column(
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: <Widget>[
-                                                            Container(
-                                                              width: 190,
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  const Icon(
-                                                                    Icons
-                                                                        .person_outlined,
-                                                                    color: const Color(
-                                                                        0xFF578BB8),
-                                                                  ),
-                                                                  Container(
-                                                                    width: 150,
-                                                                    child: Text(
-                                                                      "${snapshot.data[index]["MAHASISWA"]} - ${snapshot.data[index]["NRP"]}",
-                                                                      style: const TextStyle(
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight: FontWeight
-                                                                              .w600,
-                                                                          letterSpacing:
-                                                                              1),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              child: SizedBox(
-                                                                width: 27,
-                                                                height: 27,
-                                                                child:
-                                                                    Container(
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              20),
-                                                                          border:
-                                                                              Border.all(
-                                                                            color:
-                                                                                const Color(0xFF578BB8),
-                                                                            width:
-                                                                                1.0,
-                                                                          )),
-                                                                  child:
-                                                                      Center(
-                                                                    child:
-                                                                        Text(
-                                                                      "${snapshot.data[index]["PRIORITAS"]}",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight: FontWeight
-                                                                              .w600,
-                                                                          letterSpacing:
-                                                                              1),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            const Icon(
-                                                              Icons
-                                                                  .title_outlined,
-                                                              color: const Color(
-                                                                  0xFF578BB8),
-                                                            ),
-                                                            Container(
-                                                              width: 260,
-                                                              child: Text(
-                                                                "${snapshot.data[index]["JUDUL"]}",
-                                                                style: const TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    letterSpacing:
-                                                                        1),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Container(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                            height: 40,
-                                                            width: 150.0,
-                                                            child:
-                                                                DropdownSearch<
-                                                                    String>(
-                                                              mode: Mode.MENU,
-                                                              // showSelectedItem: true,
-                                                              items: [
-                                                                "Diterima",
-                                                                "Ditolak",
-                                                                "Pending"
-                                                              ],
-                                                              hint: ("${snapshot.data[index]["STATUS"]}" ==
-                                                                      '1')
-                                                                  ? "Diterima"
-                                                                  : ("${snapshot.data[index]["STATUS"]}" ==
-                                                                          '2')
-                                                                      ? "Ditolak"
-                                                                      : ("${snapshot.data[index]["STATUS"]}" ==
-                                                                  '3') ? "Pending" : "Pilih Status",
-                                                              // valuestatus = value,
-                                                              onChanged: (value) =>
-                                                                  setStatus(
-                                                                      value,
-                                                                      "${snapshot.data[index]["NOMOR"]}"),
-                                                            ),
-                                                          ),
-                                                          IconButton(
-                                                            onPressed: () {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder:
-                                                                          (context) {
-                                                                return DetailJudulMahasiswa(
-                                                                    nomor:
-                                                                        "${snapshot.data[index]["NOMOR"]}");
-                                                              }));
-                                                            },
-                                                            icon: const Icon(Icons
-                                                                .arrow_forward_ios_outlined),
-                                                            color: const Color(
-                                                                0xFF578BB8),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container();
-                                },
-                              ),
-                            );
-                          }
-                        },
-                      )
+                    :  Container()
               ],
             ),
           ),
